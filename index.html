@@ -1,6 +1,102 @@
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SASNO WEB</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="/assets/icon.png">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+    .alerta-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #FFA500;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .alerta-overlay h1 {
+      font-size: 2.5rem;
+      margin: 0;
+    }
+    .alerta-overlay p {
+      font-size: 1.4rem;
+      margin: 1rem;
+      text-align: center;
+      max-width: 80%;
+    }
+    .cerrar-btn {
+      font-size: 1rem;
+      padding: 10px 20px;
+      margin-top: 20px;
+      background: #fff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;margin-top:40px;">SASNO WEB está en línea...</h2>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js';
 
-<!-- Tu script -->
-<script type="module" src="main.js"></script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4nqBYRE79R_rWlpE5cqClBtA_-zx4-5I",
+      authDomain: "sasno-d79e1.firebaseapp.com",
+      projectId: "sasno-d79e1",
+      storageBucket: "sasno-d79e1.firebasestorage.app",
+      messagingSenderId: "273171190720",
+      appId: "1:273171190720:web:e9362e0d5206ac6f5c2e25",
+      measurementId: "G-ZYDYKB9VWD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
+
+    const vapidKey = "TU_CLAVE_PUBLICA_VAPID"; // Reemplaza por tu clave VAPID
+
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        getToken(messaging, { vapidKey }).then(token => {
+          console.log("FCM Token:", token);
+          // Puedes enviar este token a tu servidor si lo necesitas
+        });
+      }
+    });
+
+    onMessage(messaging, payload => {
+      console.log("Mensaje recibido:", payload);
+      const { title, body } = payload.notification;
+      mostrarAlerta(title, body);
+    });
+
+    function mostrarAlerta(titulo, mensaje) {
+      const alerta = document.createElement('div');
+      alerta.className = 'alerta-overlay';
+      alerta.innerHTML = `
+        <h1>${titulo}</h1>
+        <p>${mensaje}</p>
+        <button class="cerrar-btn" onclick="this.parentElement.remove()">Cerrar</button>
+      `;
+      document.body.appendChild(alerta);
+    }
+  </script>
+</body>
+</html>
