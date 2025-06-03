@@ -15,6 +15,46 @@
       padding: 0;
       background: #fff;
     }
+    .container {
+      text-align: center;
+      padding: 2rem;
+    }
+    .logo {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #e53935;
+    }
+    .logo img {
+      height: 40px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    .status-icon {
+      font-size: 5rem;
+      margin: 2rem 0;
+    }
+    .estado {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    .ubicacion {
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+    }
+    .footer-icons {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1rem;
+      background-color: white;
+      border-top: 1px solid #ccc;
+    }
+    .footer-icons img {
+      height: 24px;
+    }
     .alerta-overlay {
       position: fixed;
       top: 0;
@@ -52,7 +92,24 @@
   </style>
 </head>
 <body>
-  <h2 style="text-align:center;margin-top:40px;">SASNO WEB está en línea...</h2>
+  <div class="container">
+    <div class="logo">
+      <img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB
+    </div>
+    <div class="status-icon">
+      📶
+    </div>
+    <div class="estado">Monitoreando Eventos</div>
+    <div class="ubicacion">
+      📍 Alertando para: Miguel Hidalgo, Cdmx
+    </div>
+  </div>
+
+  <div class="footer-icons">
+    <img src="/assets/home-icon.png" alt="Inicio">
+    <img src="/assets/settings-icon.png" alt="Configuración">
+  </div>
+
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js';
