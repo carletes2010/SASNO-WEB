@@ -2,109 +2,23 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <!-- viewport-fit=cover para safe‐area en iOS -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SASNO WEB</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="/assets/icon.png">
-  <!-- Google Font Comfortaa -->
-  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
-    /* BODY: usar -webkit-fill-available y safe-area */
-    body {
-      font-family: 'Comfortaa', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      /* reemplaza 100vh problemático en iOS */
-      min-height: 100%;
-      height: -webkit-fill-available;
-      /* reserva espacio en bottom para notch / home indicator */
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    .logo {
-      text-align: center;
-      font-size: 3.5rem;
-      font-weight: bold;
-      color: #e53935;
-      padding: 1.5rem 0 .5rem;
-    }
-    .logo img {
-      height: 70px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-
-    .container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-    .status-icon img { height: 120px; }
-    .estado { font-size: 2.8rem; font-weight: bold; }
-    .ubicacion {
-      font-size: 1.6rem;
-      margin-top: 1rem;
-    }
-
-    /* FOOTER: usar sticky para evitar saltos */
-    .footer-icons {
-      position: sticky;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      padding: 1rem;
-      background: #fff;
-      border-top: 1px solid #ccc;
-      z-index: 100;
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .footer-icons img {
-      height: 24px;
-      cursor: pointer;
-    }
-
-    /* OVERLAY: safe-area inset arriba y abajo */
-    .overlay-base {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      color: #fff;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      text-align: center;
-      background: #FFA500;
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .overlay-base.show { display: flex; }
-    .overlay-btn {
-      position: absolute;
-      top: calc(env(safe-area-inset-top) + 1.2rem);
-      left: 1.2rem;
-      background: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      font-size: 2rem;
-      cursor: pointer;
-      color: #000;
-    }
+    body { font-family:'Segoe UI',sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; min-height:100vh; }
+    .logo { text-align:center; font-size:3.5rem; font-weight:bold; color:#e53935; padding:1.5rem 0 .5rem; }
+    .logo img { height:70px; vertical-align:middle; margin-right:10px; }
+    .container { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem 1rem; }
+    .status-icon img { height:120px; }
+    .estado { font-size:2.8rem; font-weight:bold; }
+    .ubicacion { font-size:1.6rem; margin-top:1rem; }
+    .footer-icons { position:fixed; bottom:0; width:100%; display:flex; justify-content:center; gap:2rem; padding:1rem; background:#fff; border-top:1px solid #ccc; z-index:100; }
+    .footer-icons img { height:24px; cursor:pointer; }
+    .overlay-base { position:fixed; top:0; left:0; width:100%; height:100%; color:#fff; display:none; flex-direction:column; justify-content:center; align-items:center; z-index:9999; text-align:center; background:#FFA500; }
+    .overlay-base.show { display:flex; }
+    .overlay-btn { position:absolute; top:1.2rem; left:1.2rem; background:#fff; border:none; border-radius:50%; width:48px; height:48px; font-size:2rem; cursor:pointer; color:#000; }
   </style>
   <!-- Pusher -->
   <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
@@ -112,13 +26,9 @@
 <body>
   <!-- VISTA INICIO -->
   <div id="vista-inicio">
-    <div class="logo">
-      <img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB
-    </div>
+    <div class="logo"><img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB</div>
     <div class="container">
-      <div class="status-icon">
-        <img src="/assets/wifi.png" alt="WiFi Icon">
-      </div>
+      <div class="status-icon"><img src="/assets/wifi.png" alt="WiFi Icon"></div>
       <div class="estado">Monitoreando Eventos</div>
       <div class="ubicacion" id="ubicacion-texto">📍 Detectando ubicación...</div>
     </div>
@@ -128,13 +38,8 @@
   <div id="vista-config" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:#fff; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem;">
     <img src="/assets/icon.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
     <h1 style="font-size:3rem; margin-bottom:2.5rem;">Configuración</h1>
-    <button id="alert-test-btn" style="padding:1.2rem 2.4rem; font-size:1.5rem; border:none; border-radius:30px; background:#004aad; color:#fff; cursor:pointer; margin-bottom:2.5rem;">
-      PRUEBA DE ALERTA
-    </button>
-    <div style="margin-bottom:3.5rem; font-size:1.8rem; font-weight:bold;">
-      Sismos Menores
-      <input type="checkbox" checked style="transform:scale(1.6); margin-left:1rem;">
-    </div>
+    <button id="alert-test-btn" style="padding:1.2rem 2.4rem; font-size:1.5rem; border:none; border-radius:30px; background:#004aad; color:#fff; cursor:pointer; margin-bottom:2.5rem;">PRUEBA DE ALERTA</button>
+    <div style="margin-bottom:3.5rem; font-size:1.8rem; font-weight:bold;">Sismos Menores <input type="checkbox" checked style="transform:scale(1.6); margin-left:1rem;"></div>
     <h2 style="font-size:2.2rem;">SASNO 2025</h2>
   </div>
 
@@ -146,7 +51,7 @@
 
   <!-- VISTA ALERTA / SIMULACRO -->
   <div id="vista-simulacro" class="overlay-base">
-    <button class="overlay-btn" onclick="cerrarOverlay()">&times;</button>
+    <button class="overlay-btn" onclick="cerrarSimulacro()">&times;</button>
     <img src="/assets/whitelogo.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
     <h1 id="sim-title" style="font-size:4rem; margin:1.2rem 0;">¡SIMULACRO!</h1>
     <img src="/assets/handicon.png" alt="Mano" style="height:200px; margin:1.2rem 0;">
@@ -156,75 +61,50 @@
   <audio id="alertaudio" src="/assets/alertaudio.mp3" preload="auto"></audio>
 
   <script>
-    // 1) Solicitar permiso notificaciones (iOS no soporta new Notification)
-    if (Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-
-    // 2) Desbloquear autoplay de audio en iOS con primer toque
-    document.body.addEventListener('touchend', () => {
-      const audio = document.getElementById('alertaudio');
-      audio.play().then(() => audio.pause()).catch(() => {/* Ignorar */});
-    }, { once: true });
-
     // UI Navigation
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('home-icon').onclick     = () => switchView('inicio');
+      document.getElementById('home-icon').onclick = () => switchView('inicio');
       document.getElementById('settings-icon').onclick = () => switchView('config');
-      document.getElementById('alert-test-btn').onclick = () => triggerOverlay('¡SIMULACRO!', 'SIMULACRO DE ALERTA');
+      document.getElementById('alert-test-btn').onclick = showAlert;
       switchView('inicio');
     });
 
     function switchView(view) {
-      document.getElementById('vista-inicio').style.display = view==='inicio'  ? 'block' : 'none';
-      document.getElementById('vista-config').style.display = view==='config'  ? 'flex' : 'none';
+      document.getElementById('vista-inicio').style.display = view==='inicio'? 'block':'none';
+      document.getElementById('vista-config').style.display = view==='config'? 'flex':'none';
     }
 
-    function closeOverlay() {
-      document.getElementById('vista-simulacro').classList.remove('show');
-      resetAudio();
-      switchView('inicio');
-    }
-    window.cerrarOverlay = closeOverlay;
+    function showAlert() { triggerOverlay('¡SIMULACRO!', 'SIMULACRO DE ALERTA'); }
+    function closeOverlay() { document.getElementById('vista-simulacro').classList.remove('show'); resetAudio(); switchView('inicio'); }
+
+    window.cerrarSimulacro = closeOverlay;
 
     function triggerOverlay(title, subtitle) {
-      document.getElementById('sim-title').textContent    = title;
+      document.getElementById('sim-title').textContent = title;
       document.getElementById('sim-subtitle').textContent = subtitle;
       document.getElementById('vista-simulacro').classList.add('show');
-      resetAudio();
-      document.getElementById('alertaudio').play().catch(()=>{/*no autoriza*/});
-      // Notificación web sólo en Desktop/WebKit con soporte
-      if (Notification.permission === 'granted') {
-        try {
-          new Notification(title, { body: subtitle, icon: '/assets/icon.png' });
-        } catch(e) { /* iOS ignora */ }
-      }
-      clearTimeout(window._timer);
-      window._timer = setTimeout(closeOverlay, 60000);
+      resetAudio(); document.getElementById('alertaudio').play();
+      clearTimeout(window._simTimer);
+      window._simTimer = setTimeout(closeOverlay, 60000);
     }
 
     function resetAudio() {
-      const audio = document.getElementById('alertaudio');
-      audio.pause();
-      audio.currentTime = 0;
+      const audio = document.getElementById('alertaudio'); audio.pause(); audio.currentTime = 0;
     }
 
-    // 3) Pusher setup
+    // Pusher setup
     const pusher = new Pusher('0f74c31648d3adb34e1b', { cluster: 'us2', forceTLS: true });
     const channel = pusher.subscribe('alertas-sasno');
     channel.bind('eqw', data => triggerOverlay(data.titulo, data.cuerpo));
 
-    // 4) Geolocation + reverse-geocoding
+    // Geolocation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async pos => {
         const { latitude, longitude } = pos.coords;
         try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
-            { headers: { 'User-Agent': 'SASNO-Web/1.0' }}
-          );
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
           const data = await res.json();
-          const city  = data.address.city || data.address.town || data.address.village || 'tu zona';
+          const city = data.address.city || data.address.town || data.address.village || 'tu zona';
           const state = data.address.state || '';
           document.getElementById('ubicacion-texto').textContent = `📍 Alertando para: ${city}, ${state}`;
         } catch {
@@ -235,14 +115,6 @@
       });
     } else {
       document.getElementById('ubicacion-texto').textContent = '📍 Geolocalización no compatible';
-    }
-
-    // 5) Ajuste dinámico de footer si fuera necesario (fixed→sticky recomendado)
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        const footer = document.querySelector('.footer-icons');
-        footer.style.bottom = `${window.visualViewport.height - window.innerHeight}px`;
-      });
     }
   </script>
 </body>
