@@ -20,11 +20,11 @@
     .overlay-base.show { display:flex; }
     .overlay-btn { position:absolute; top:1.2rem; left:1.2rem; background:#fff; border:none; border-radius:50%; width:48px; height:48px; font-size:2rem; cursor:pointer; color:#000; }
   </style>
-  <!-- Pusher -->
+  
   <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 </head>
 <body>
-  <!-- VISTA INICIO -->
+  
   <div id="vista-inicio">
     <div class="logo"><img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB</div>
     <div class="container">
@@ -34,7 +34,6 @@
     </div>
   </div>
 
-  <!-- VISTA CONFIG -->
   <div id="vista-config" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:#fff; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem;">
     <img src="/assets/icon.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
     <h1 style="font-size:3rem; margin-bottom:2.5rem;">Configuración</h1>
@@ -43,13 +42,13 @@
     <h2 style="font-size:2.2rem;">SASNO 2025</h2>
   </div>
 
-  <!-- FOOTER -->
+
   <div class="footer-icons">
     <img id="home-icon" src="/assets/home-icon.png" alt="Inicio">
     <img id="settings-icon" src="/assets/settings-icon.png" alt="Configuración">
   </div>
 
-  <!-- VISTA ALERTA / SIMULACRO -->
+  
   <div id="vista-simulacro" class="overlay-base">
     <button class="overlay-btn" onclick="cerrarSimulacro()">&times;</button>
     <img src="/assets/whitelogo.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
@@ -61,7 +60,7 @@
   <audio id="alertaudio" src="/assets/alertaudio.mp3" preload="auto"></audio>
 
   <script>
-    // UI Navigation
+   
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('home-icon').onclick = () => switchView('inicio');
       document.getElementById('settings-icon').onclick = () => switchView('config');
@@ -92,12 +91,12 @@
       const audio = document.getElementById('alertaudio'); audio.pause(); audio.currentTime = 0;
     }
 
-    // Pusher setup
+   
     const pusher = new Pusher('0f74c31648d3adb34e1b', { cluster: 'us2', forceTLS: true });
     const channel = pusher.subscribe('alertas-sasno');
     channel.bind('eqw', data => triggerOverlay(data.titulo, data.cuerpo));
 
-    // Geolocation
+   
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async pos => {
         const { latitude, longitude } = pos.coords;
