@@ -9,36 +9,22 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    .logo {
-      text-align: center;
-      font-size: 3.5rem;
-      font-weight: bold;
-      color: #e53935;
-      padding: 1.5rem 0 0.5rem;
-    }
-    .logo img { height: 70px; vertical-align: middle; margin-right: 10px; }
-    .container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1rem; }
-    .status-icon img { height: 120px; }
-    .estado { font-size: 2.8rem; font-weight: bold; }
-    .ubicacion { font-size: 1.6rem; margin-top: 1rem; }
-    .footer-icons { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: center; gap: 2rem; padding: 1rem; background-color: white; border-top: 1px solid #ccc; z-index: 100; }
-    .footer-icons img { height: 24px; cursor: pointer; }
-    .alerta-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #FFA500; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
-    .cerrar-btn { font-size: 1rem; padding: 10px 20px; margin-top: 20px; background: #fff; color: #000; border: none; cursor: pointer; border-radius: 8px; }
+    body{font-family:'Segoe UI',sans-serif;margin:0;padding:0;background:#fff;display:flex;flex-direction:column;min-height:100vh;}
+    .logo{text-align:center;font-size:3.5rem;font-weight:bold;color:#e53935;padding:1.5rem 0 .5rem;}
+    .logo img{height:70px;vertical-align:middle;margin-right:10px;}
+    .container{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem;}
+    .status-icon img{height:120px;}
+    .estado{font-size:2.8rem;font-weight:bold;}
+    .ubicacion{font-size:1.6rem;margin-top:1rem;}
+    .footer-icons{position:fixed;bottom:0;width:100%;display:flex;justify-content:center;gap:2rem;padding:1rem;background:#fff;border-top:1px solid #ccc;z-index:100;}
+    .footer-icons img{height:24px;cursor:pointer;}
+    .alerta-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#FFA500;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;}
+    .cerrar-btn{font-size:1.2rem;padding:12px 24px;margin-top:24px;background:#fff;color:#000;border:none;cursor:pointer;border-radius:8px;}
   </style>
 </head>
 <body>
   <!-- VISTA INICIO -->
-  <div id="vista-inicio" style="display:flex; flex-direction:column; min-height:100vh;">
+  <div id="vista-inicio" style="display:flex;flex-direction:column;min-height:100vh;">
     <div class="logo"><img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB</div>
     <div class="container">
       <div class="status-icon"><img src="/assets/wifi.png" alt="WiFi Icon"></div>
@@ -54,40 +40,51 @@
   </div>
 
   <!-- VISTA CONFIG -->
-  <div id="vista-config" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:white; z-index:10; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:2rem;">
-    <img src="/assets/icon.png" alt="SASNO Logo" style="height:50px; margin-bottom:1rem;">
-    <h1 style="font-size:2.8rem; margin-bottom:2rem;">Configuración</h1>
-    <button onclick="mostrarSimulacro()" style="padding:1rem 2rem; font-size:1.3rem; border:none; border-radius:30px; background:#004aad; color:white; cursor:pointer; margin-bottom:2rem;">PRUEBA DE ALERTA</button>
-    <div style="margin-bottom:3rem; font-size:1.6rem; font-weight:bold;">Sismos Menores <input type="checkbox" checked style="transform:scale(1.5); margin-left:1rem;"></div>
-    <h2 style="font-size:2rem;">SASNO 2025</h2>
+  <div id="vista-config" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:#fff;z-index:10;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:2rem;">
+    <img src="/assets/icon.png" alt="SASNO Logo" style="height:60px;margin-bottom:1.5rem;">
+    <h1 style="font-size:3rem;margin-bottom:2.5rem;">Configuración</h1>
+    <button onclick="mostrarSimulacro()" style="padding:1.2rem 2.4rem;font-size:1.5rem;border:none;border-radius:30px;background:#004aad;color:#fff;cursor:pointer;margin-bottom:2.5rem;">PRUEBA DE ALERTA</button>
+    <div style="margin-bottom:3.5rem;font-size:1.8rem;font-weight:bold;">Sismos Menores <input type="checkbox" checked style="transform:scale(1.6);margin-left:1rem;"></div>
+    <h2 style="font-size:2.2rem;">SASNO 2025</h2>
   </div>
 
   <!-- VISTA SIMULACRO -->
-  <div id="vista-simulacro" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#FFA500; color:white; z-index:9999; text-align:center; padding-top:2rem;">
-    <button onclick="cerrarSimulacro()" style="position:absolute; top:1rem; left:1rem; background:white; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5rem; cursor:pointer;">&times;</button>
-    <img src="/assets/whitelogo.png" alt="SASNO Logo" style="height:40px; margin-bottom:1rem;">
-    <h1 style="font-size:3rem; margin:1rem 0;">¡SIMULACRO!</h1>
-    <img src="/assets/handicon.png" alt="Mano" style="height:150px; margin:1rem 0;">
-    <h2 style="font-size:2rem;">SIMULACRO DE ALERTA</h2>
+  <div id="vista-simulacro" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#FFA500;color:#fff;z-index:9999;text-align:center;padding-top:3rem;">
+    <button onclick="cerrarSimulacro()" style="position:absolute;top:1.2rem;left:1.2rem;background:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:2rem;cursor:pointer;">&times;</button>
+    <img src="/assets/whitelogo.png" alt="SASNO Logo" style="height:60px;margin-bottom:1.5rem;">
+    <h1 style="font-size:4rem;margin:1.2rem 0;">¡SIMULACRO!</h1>
+    <img src="/assets/handicon.png" alt="Mano" style="height:200px;margin:1.2rem 0;">
+    <h2 style="font-size:2.5rem;">SIMULACRO DE ALERTA</h2>
   </div>
 
-<script>
-  function mostrarVista(vista){
-    if(vista==='inicio'){
-      document.getElementById('vista-inicio').style.display='flex';
-      document.getElementById('vista-config').style.display='none';
-    }else if(vista==='config'){
-      document.getElementById('vista-inicio').style.display='none';
-      document.getElementById('vista-config').style.display='flex';
-    }
-  }
-  function mostrarSimulacro(){ document.getElementById('vista-simulacro').style.display='block'; }
-  function cerrarSimulacro(){ document.getElementById('vista-simulacro').style.display='none'; }
+<audio id="alertaudio" src="/assets/alertaudio.mp3" preload="auto"></audio>
 
-  // GEOLOCALIZACION
+<script>
+  function mostrarVista(v){
+    document.getElementById('vista-inicio').style.display = v==='inicio'?'flex':'none';
+    document.getElementById('vista-config').style.display = v==='config'?'flex':'none';
+  }
+  function mostrarSimulacro(){
+  const sim=document.getElementById('vista-simulacro');
+  sim.style.display='block';
+  const audio=document.getElementById('alertaudio');
+  if(audio){ audio.currentTime=0; audio.play(); }
+  clearTimeout(window._simulacroTimer);
+  window._simulacroTimer=setTimeout(cerrarSimulacro,60000); // 1 minuto
+}
+  function cerrarSimulacro(){
+  const sim=document.getElementById('vista-simulacro');
+  sim.style.display='none';
+  const audio=document.getElementById('alertaudio');
+  if(audio){ audio.pause(); audio.currentTime=0; }
+  clearTimeout(window._simulacroTimer);
+  mostrarVista('inicio');
+}
+
+  // Geolocalización
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(async pos=>{
-      const {latitude:lat, longitude:lon}=pos.coords;
+      const {latitude:lat,longitude:lon}=pos.coords;
       try{
         const res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
         const data=await res.json();
