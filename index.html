@@ -96,7 +96,7 @@
   const firebaseConfig={apiKey:"AIzaSyC4nqBYRE79R_rWlpE5cqClBtA_-zx4-5I",authDomain:"sasno-d79e1.firebaseapp.com",projectId:"sasno-d79e1",storageBucket:"sasno-d79e1.firebasestorage.app",messagingSenderId:"273171190720",appId:"1:273171190720:web:e9362e0d5206ac6f5c2e25",measurementId:"G-ZYDYKB9VWD"};
   const app=firebase.initializeApp(firebaseConfig);
   const messaging=firebase.messaging();
-  const vapidKey="TU_CLAVE_PUBLICA_VAPID";
+  const vapidKey="BFKfPrQ6TTSWqmcIComLgdr5wsOJA8u8vVziPRtlDtexx0E1BXHUkobGZcikk8FKK-2E6_tsCPLvF40gv_uvwpY";
 
   Notification.requestPermission().then(p=>{if(p==='granted'){messaging.getToken({vapidKey}).then(t=>console.log('FCM',t));}});
 
