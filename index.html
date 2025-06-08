@@ -16,35 +16,42 @@
       background: #fff;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
       min-height: 100vh;
     }
-    .container {
-      text-align: center;
-      padding: 2rem;
-    }
     .logo {
-      font-size: 3rem;
+      text-align: center;
+      font-size: 3.5rem;
       font-weight: bold;
       color: #e53935;
-      margin-bottom: 1rem;
+      padding: 1.5rem 0;
     }
     .logo img {
-      height: 60px;
+      height: 70px;
       vertical-align: middle;
       margin-right: 10px;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
     }
     .status-icon {
       margin: 2rem 0;
     }
+    .status-icon img {
+      height: 100px;
+    }
     .estado {
-      font-size: 2rem;
+      font-size: 2.5rem;
       font-weight: bold;
     }
     .ubicacion {
-      font-size: 1.2rem;
-      margin-top: 0.5rem;
+      font-size: 1.5rem;
+      margin-top: 1rem;
     }
     .footer-icons {
       position: fixed;
@@ -97,12 +104,13 @@
   </style>
 </head>
 <body>
+  <div class="logo">
+    <img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB
+  </div>
+
   <div class="container">
-    <div class="logo">
-      <img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB
-    </div>
     <div class="status-icon">
-      <img src="/assets/wifi.png" alt="WiFi Icon" style="height: 80px;">
+      <img src="/assets/wifi.png" alt="WiFi Icon">
     </div>
     <div class="estado">Monitoreando Eventos</div>
     <div class="ubicacion" id="ubicacion-texto">
