@@ -10,96 +10,22 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    .logo {
-      text-align: center;
-      font-size: 3.5rem;
-      font-weight: bold;
-      color: #e53935;
-      padding: 1.5rem 0 0.5rem;
-    }
-    .logo img {
-      height: 70px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    .container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-    .status-icon img {
-      height: 120px;
-    }
-    .estado {
-      font-size: 2.8rem;
-      font-weight: bold;
-    }
-    .ubicacion {
-      font-size: 1.6rem;
-      margin-top: 1rem;
-    }
-    .footer-icons {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      padding: 1rem;
-      background: #fff;
-      border-top: 1px solid #ccc;
-      z-index: 100;
-    }
-    .footer-icons img {
-      height: 24px;
-      cursor: pointer;
-    }
-    .overlay-base {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      text-align: center;
-      background: #FFA500;
-    }
-    .overlay-btn {
-      position: absolute;
-      top: 1.2rem;
-      left: 1.2rem;
-      background: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      font-size: 2rem;
-      cursor: pointer;
-      color: #000;
-    }
+    body{font-family:'Segoe UI',sans-serif;margin:0;padding:0;background:#fff;display:flex;flex-direction:column;min-height:100vh;}
+    .logo{text-align:center;font-size:3.5rem;font-weight:bold;color:#e53935;padding:1.5rem 0 .5rem;}
+    .logo img{height:70px;vertical-align:middle;margin-right:10px;}
+    .container{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem;}
+    .status-icon img{height:120px;}
+    .estado{font-size:2.8rem;font-weight:bold;}
+    .ubicacion{font-size:1.6rem;margin-top:1rem;}
+    .footer-icons{position:fixed;bottom:0;width:100%;display:flex;justify-content:center;gap:2rem;padding:1rem;background:#fff;border-top:1px solid #ccc;z-index:100;}
+    .footer-icons img{height:24px;cursor:pointer;}
+    .overlay-base{position:fixed;top:0;left:0;width:100%;height:100%;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999;text-align:center;background:#FFA500;}
+    .overlay-btn{position:absolute;top:1.2rem;left:1.2rem;background:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:2rem;cursor:pointer;color:#000;}
   </style>
 </head>
 <body>
   <!-- VISTA INICIO -->
-  <div id="vista-inicio" style="display: flex; flex-direction: column; min-height: 100vh;">
+  <div id="vista-inicio" style="display:flex;flex-direction:column;min-height:100vh;">
     <div class="logo"><img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB</div>
     <div class="container">
       <div class="status-icon"><img src="/assets/wifi.png" alt="WiFi Icon"></div>
@@ -115,107 +41,84 @@
   </div>
 
   <!-- VISTA CONFIG -->
-  <div id="vista-config" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #fff; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
-    <img src="/assets/icon.png" alt="SASNO Logo" style="height: 60px; margin-bottom: 1.5rem;">
-    <h1 style="font-size: 3rem; margin-bottom: 2.5rem;">Configuración</h1>
-    <button onclick="mostrarSimulacro()" style="padding: 1.2rem 2.4rem; font-size: 1.5rem; border: none; border-radius: 30px; background: #004aad; color: #fff; cursor: pointer; margin-bottom: 2.5rem;">PRUEBA DE ALERTA</button>
-    <div style="margin-bottom: 3.5rem; font-size: 1.8rem; font-weight: bold;">Sismos Menores <input type="checkbox" checked style="transform: scale(1.6); margin-left: 1rem;"></div>
-    <h2 style="font-size: 2.2rem;">SASNO 2025</h2>
+  <div id="vista-config" style="display:none;position:fixed;top:0;left:0;width:100%;height:100vh;background:#fff;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;">
+    <img src="/assets/icon.png" alt="SASNO Logo" style="height:60px;margin-bottom:1.5rem;">
+    <h1 style="font-size:3rem;margin-bottom:2.5rem;">Configuración</h1>
+    <button onclick="mostrarSimulacro()" style="padding:1.2rem 2.4rem;font-size:1.5rem;border:none;border-radius:30px;background:#004aad;color:#fff;cursor:pointer;margin-bottom:2.5rem;">PRUEBA DE ALERTA</button>
+    <div style="margin-bottom:3.5rem;font-size:1.8rem;font-weight:bold;">Sismos Menores <input type="checkbox" checked style="transform:scale(1.6);margin-left:1rem;"></div>
+    <h2 style="font-size:2.2rem;">SASNO 2025</h2>
   </div>
 
   <!-- VISTA ALERTA / SIMULACRO -->
-  <div id="vista-simulacro" class="overlay-base" style="display: none;">
+  <div id="vista-simulacro" class="overlay-base" style="display:none;">
     <button class="overlay-btn" onclick="cerrarSimulacro()">&times;</button>
-    <img src="/assets/whitelogo.png" alt="SASNO Logo" style="height: 60px; margin-bottom: 1.5rem;">
-    <h1 id="sim-title" style="font-size: 4rem; margin: 1.2rem 0;">¡SIMULACRO!</h1>
-    <img src="/assets/handicon.png" alt="Mano" style="height: 200px; margin: 1.2rem 0;">
-    <h2 id="sim-subtitle" style="font-size: 2.5rem;">SIMULACRO DE ALERTA</h2>
+    <img src="/assets/whitelogo.png" alt="SASNO Logo" style="height:60px;margin-bottom:1.5rem;">
+    <h1 id="sim-title" style="font-size:4rem;margin:1.2rem 0;">¡SIMULACRO!</h1>
+    <img src="/assets/handicon.png" alt="Mano" style="height:200px;margin:1.2rem 0;">
+    <h2 id="sim-subtitle" style="font-size:2.5rem;">SIMULACRO DE ALERTA</h2>
   </div>
 
   <audio id="alertaudio" src="/assets/alertaudio.mp3" preload="auto"></audio>
 
   <script>
-    /* ---------- VISTAS ---------- */
+    // VISTAS
     function mostrarVista(v) {
-      document.getElementById('vista-inicio').style.display = v === 'inicio' ? 'flex' : 'none';
-      document.getElementById('vista-config').style.display = v === 'config' ? 'flex' : 'none';
+      document.getElementById('vista-inicio').style.display = v==='inicio'?'flex':'none';
+      document.getElementById('vista-config').style.display = v==='config'?'flex':'none';
     }
-
-    /* ---------- SIMULACRO MANUAL ---------- */
-    function mostrarSimulacro() { prepararOverlay('¡SIMULACRO!', 'SIMULACRO DE ALERTA'); }
-
+    // SIMULACRO
+    function mostrarSimulacro() { prepararOverlay('¡SIMULACRO!','SIMULACRO DE ALERTA'); }
     function cerrarSimulacro() {
-      document.getElementById('vista-simulacro').style.display = 'none';
-      const audio = document.getElementById('alertaudio'); audio.pause(); audio.currentTime = 0;
+      document.getElementById('vista-simulacro').style.display='none';
+      const audio=document.getElementById('alertaudio'); audio.pause(); audio.currentTime=0;
       clearTimeout(window._simTimer);
       mostrarVista('inicio');
     }
-
-    function prepararOverlay(titulo, subtitulo) {
-      const sim = document.getElementById('vista-simulacro');
-      document.getElementById('sim-title').textContent = titulo;
-      document.getElementById('sim-subtitle').textContent = subtitulo;
-      sim.style.display = 'flex';
-      const audio = document.getElementById('alertaudio'); audio.currentTime = 0; audio.play();
+    function prepararOverlay(titulo,subtitulo) {
+      const sim=document.getElementById('vista-simulacro');
+      document.getElementById('sim-title').textContent=titulo;
+      document.getElementById('sim-subtitle').textContent=subtitulo;
+      sim.style.display='flex';
+      const audio=document.getElementById('alertaudio'); audio.currentTime=0; audio.play();
       clearTimeout(window._simTimer);
-      window._simTimer = setTimeout(cerrarSimulacro, 60000);
+      window._simTimer=setTimeout(cerrarSimulacro,60000);
     }
-
-    /* ---------- FIREBASE ---------- */
-    const firebaseConfig = {
-      apiKey: "AIzaSyC4nqBYRE79R_rWlpE5cqClBtA_-zx4-5I",
-      authDomain: "sasno-d79e1.firebaseapp.com",
-      projectId: "sasno-d79e1",
-      storageBucket: "sasno-d79e1.firebasestorage.app",
-      messagingSenderId: "273171190720",
-      appId: "1:273171190720:web:e9362e0d5206ac6f5c2e25",
-      measurementId: "G-ZYDYKB9VWD"
-    };
+    // FIREBASE
+    const firebaseConfig={apiKey:"AIzaSyC4nqBYRE79R_rWlpE5cqClBtA_-zx4-5I",authDomain:"sasno-d79e1.firebaseapp.com",projectId:"sasno-d79e1",storageBucket:"sasno-d79e1.firebasestorage.app",messagingSenderId:"273171190720",appId:"1:273171190720:web:e9362e0d5206ac6f5c2e25",measurementId:"G-ZYDYKB9VWD"};
     firebase.initializeApp(firebaseConfig);
-    const messaging = firebase.messaging();
-    const vapidKey = "BFKfPrQ6TTSWqmcIComLgdr5wsOJA8u8vVziPRtlDtexx0E1BXHUkobGZcikk8FKK-2E6_tsCPLvF40gv_uvwpY";
-
-    function askNotificationPermission() {
-      if (Notification.permission === 'default') {
-        Notification.requestPermission().then(p => { if (p === 'granted') { getFcmToken(); } });
-      } else if (Notification.permission === 'granted') { getFcmToken(); }
+    const messaging=firebase.messaging();
+    const vapidKey="BFKfPrQ6TTSWqmcIComLgdr5wsOJA8u8vVziPRtlDtexx0E1BXHUkobGZcikk8FKK-2E6_tsCPLvF40gv_uvwpY";
+    function askNotificationPermission(){
+      if(Notification.permission==='default'){
+        Notification.requestPermission().then(p=>{if(p==='granted')getFcmToken();});
+      } else if(Notification.permission==='granted'){getFcmToken();}
     }
-    function getFcmToken() {
-      messaging.getToken({ vapidKey }).then(t => {
-        console.log('FCM Token:', t);
-        // Suscripción al topic EQWWEB vía backend
-        fetch(`/subscribe?token=${t}&topic=EQWWEB`, { method: 'POST' })
-          .then(() => console.log('Suscrito al topic EQWWEB'))
-          .catch(err => console.error('Error suscribiendo al topic:', err));
-      }).catch(err => console.error('Token error', err));
-    }).then(t => console.log('FCM', t)).catch(err => console.error('Token error', err));
+    function getFcmToken(){
+      messaging.getToken({vapidKey}).then(token=>{
+        console.log('FCM Token:',token);
+        fetch(`/subscribe?token=${token}&topic=EQWWEB`,{method:'POST'})
+          .then(()=>console.log('Suscrito al topic EQWWEB'))
+          .catch(err=>console.error('Error suscribiendo al topic:',err));
+      }).catch(err=>console.error('Token error',err));
     }
-    document.addEventListener('click', askNotificationPermission, { once: true });
-
-    messaging.onMessage(payload => {
-      if (payload?.data?.event === 'eqw') {
-        prepararOverlay('¡ALERTA SÍSMICA!', 'Mantén la calma y evacúa de inmediato o sigue tus protocolos establecidos.');
-      }
-    });
-
-    /* ---------- GEOLOCALIZACIÓN ---------- */
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async pos => {
-        const { latitude: lat, longitude: lon } = pos.coords;
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-          const data = await res.json();
-          const city = data.address.city || data.address.town || data.address.village || 'tu zona';
-          const state = data.address.state || '';
-          document.getElementById('ubicacion-texto').textContent = `📍 Alertando para: ${city}, ${state}`;
-        } catch (e) {
-          document.getElementById('ubicacion-texto').textContent = '📍 Ubicación no disponible';
+    document.addEventListener('click',askNotificationPermission,{once:true});
+    messaging.onMessage(payload=>{if(payload.data?.event==='eqw')prepararOverlay('¡ALERTA SÍSMICA!','Mantén la calma y evacúa de inmediato o sigue tus protocolos establecidos.');});
+    // GEOLOCALIZACIÓN
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(async pos=>{
+        const{latitude:lat,longitude:lon}=pos.coords;
+        try{
+          const res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+          const data=await res.json();
+          const city=data.address.city||data.address.town||data.address.village||'tu zona';
+          const state=data.address.state||'';
+          document.getElementById('ubicacion-texto').textContent=`📍 Alertando para: ${city}, ${state}`;
+        }catch{
+          document.getElementById('ubicacion-texto').textContent='📍 Ubicación no disponible';
         }
-      }, error => {
-        document.getElementById('ubicacion-texto').textContent = '📍 No se pudo obtener ubicación';
-      });
-    } else {
-      document.getElementById('ubicacion-texto').textContent = '📍 Geolocalización no compatible';
+      },()=>{document.getElementById('ubicacion-texto').textContent='📍 No se pudo obtener ubicación';});
+    }else{
+      document.getElementById('ubicacion-texto').textContent='📍 Geolocalización no compatible';
     }
   </script>
 </body>
