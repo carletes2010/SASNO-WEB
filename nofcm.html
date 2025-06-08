@@ -20,7 +20,7 @@
     .overlay-btn { position:absolute; top:1.2rem; left:1.2rem; background:#fff; border:none; border-radius:50%; width:48px; height:48px; font-size:2rem; cursor:pointer; color:#000; }
   </style>
   <!-- Socket.IO -->
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-+0GZjtY4xXHzkwmo7aX6ixkmKsgNHYsYAGdivgLPgAvFp8Z64KbjrKMg09WXBJ8Q" crossorigin="anonymous"></script>
   <!-- Pusher -->
   <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 </head>
@@ -62,17 +62,20 @@
   <audio id="alertaudio" src="/assets/alertaudio.mp3" preload="auto"></audio>
 
   <script>
-    // Eventos Socket.IO
+    //------------------------------------------------
+    // Socket.IO events
     const socket = io();
     socket.on('alerta_sismica', data => prepararOverlay('¡ALERTA SÍSMICA!', data.message));
     socket.on('nuevo_evento', event => console.log('Evento recibido:', event));
 
-    // Pusher Setup
+    //------------------------------------------------
+    // Pusher setup
     const pusher = new Pusher('0f74c31648d3adb34e1b', { cluster: 'us2', forceTLS: true });
     const channel = pusher.subscribe('alertas-sasno');
     channel.bind('eqw', data => prepararOverlay(data.titulo, data.cuerpo));
 
-    // Navegación
+    //------------------------------------------------
+    // UI Navigation
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('home-icon').onclick = () => mostrarVista('inicio');
       document.getElementById('settings-icon').onclick = () => mostrarVista('config');
@@ -80,45 +83,47 @@
       mostrarVista('inicio');
     });
 
-    // VISTAS
-    function mostrarVista(v) {
-      document.getElementById('vista-inicio').style.display = v==='inicio' ? 'flex' : 'none';
-      document.getElementById('vista-config').style.display = v==='config' ? 'flex' : 'none';
+    //------------------------------------------------
+    // View Functions
+    function mostrarVista(view) {
+      document.getElementById('vista-inicio').style.display = view==='inicio'? 'flex':'none';
+      document.getElementById('vista-config').style.display = view==='config'? 'flex':'none';
     }
 
-    // SIMULACRO / ALERTA
+    // Simulacro / Alerta Overlay
     function mostrarSimulacro() { prepararOverlay('¡SIMULACRO!', 'SIMULACRO DE ALERTA'); }
     function cerrarSimulacro() {
-      document.getElementById('vista-simulacro').style.display = 'none';
-      const audio = document.getElementById('alertaudio'); audio.pause(); audio.currentTime = 0;
+      document.getElementById('vista-simulacro').style.display='none';
+      const audio = document.getElementById('alertaudio'); audio.pause(); audio.currentTime=0;
       clearTimeout(window._simTimer);
       mostrarVista('inicio');
     }
-    function prepararOverlay(titulo, subtitulo) {
-      document.getElementById('sim-title').textContent = titulo;
-      document.getElementById('sim-subtitle').textContent = subtitulo;
-      const sim = document.getElementById('vista-simulacro'); sim.style.display = 'flex';
-      const audio = document.getElementById('alertaudio'); audio.currentTime = 0; audio.play();
+    function prepararOverlay(title, subtitle) {
+      document.getElementById('sim-title').textContent=title;
+      document.getElementById('sim-subtitle').textContent=subtitle;
+      const overlay = document.getElementById('vista-simulacro'); overlay.style.display='flex';
+      const audio = document.getElementById('alertaudio'); audio.currentTime=0; audio.play();
       clearTimeout(window._simTimer);
-      window._simTimer = setTimeout(cerrarSimulacro, 60000);
+      window._simTimer=setTimeout(cerrarSimulacro,60000);
     }
 
-    // GEOLOCALIZACIÓN
+    //------------------------------------------------
+    // Geolocation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async pos => {
-        const { latitude: lat, longitude: lon } = pos.coords;
+        const {latitude,longitude}=pos.coords;
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
           const data = await res.json();
-          const city = data.address.city || data.address.town || data.address.village || 'tu zona';
-          const state = data.address.state || '';
-          document.getElementById('ubicacion-texto').textContent = `📍 Alertando para: ${city}, ${state}`;
+          const city = data.address.city||data.address.town||data.address.village||'tu zona';
+          const state = data.address.state||'';
+          document.getElementById('ubicacion-texto').textContent=`📍 Alertando para: ${city}, ${state}`;
         } catch {
-          document.getElementById('ubicacion-texto').textContent = '📍 Ubicación no disponible';
+          document.getElementById('ubicacion-texto').textContent='📍 Ubicación no disponible';
         }
-      }, () => { document.getElementById('ubicacion-texto').textContent = '📍 No se pudo obtener ubicación'; });
+      },()=>{document.getElementById('ubicacion-texto').textContent='📍 No se pudo obtener ubicación';});
     } else {
-      document.getElementById('ubicacion-texto').textContent = '📍 Geolocalización no compatible';
+      document.getElementById('ubicacion-texto').textContent='📍 Geolocalización no compatible';
     }
   </script>
 </body>
