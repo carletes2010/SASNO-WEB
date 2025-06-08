@@ -23,7 +23,7 @@
       font-size: 3.5rem;
       font-weight: bold;
       color: #e53935;
-      padding: 1.5rem 0;
+      padding: 1.5rem 0 0.5rem;
     }
     .logo img {
       height: 70px;
@@ -37,20 +37,20 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 2rem;
+      padding: 2rem 1rem;
     }
     .status-icon {
-      margin: 2rem 0;
+      margin-bottom: 1rem;
     }
     .status-icon img {
-      height: 100px;
+      height: 120px;
     }
     .estado {
-      font-size: 2.5rem;
+      font-size: 2.8rem;
       font-weight: bold;
     }
     .ubicacion {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       margin-top: 1rem;
     }
     .footer-icons {
@@ -108,7 +108,7 @@
     <img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB
   </div>
 
-  <div class="container">
+  <div class="container" style="margin-top: auto; margin-bottom: auto;">
     <div class="status-icon">
       <img src="/assets/wifi.png" alt="WiFi Icon">
     </div>
@@ -140,7 +140,7 @@
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
 
-    const vapidKey = "TU_CLAVE_PUBLICA_VAPID"; // Reemplaza por tu clave VAPID
+    const vapidKey = "TU_CLAVE_PUBLICA_VAPID";
 
     Notification.requestPermission().then(permission => {
       if (permission === 'granted') {
