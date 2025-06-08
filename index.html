@@ -181,7 +181,14 @@
       } else if (Notification.permission === 'granted') { getFcmToken(); }
     }
     function getFcmToken() {
-      messaging.getToken({ vapidKey }).then(t => console.log('FCM', t)).catch(err => console.error('Token error', err));
+      messaging.getToken({ vapidKey }).then(t => {
+        console.log('FCM Token:', t);
+        // Suscripción al topic EQWWEB vía backend
+        fetch(`/subscribe?token=${t}&topic=EQWWEB`, { method: 'POST' })
+          .then(() => console.log('Suscrito al topic EQWWEB'))
+          .catch(err => console.error('Error suscribiendo al topic:', err));
+      }).catch(err => console.error('Token error', err));
+    }).then(t => console.log('FCM', t)).catch(err => console.error('Token error', err));
     }
     document.addEventListener('click', askNotificationPermission, { once: true });
 
