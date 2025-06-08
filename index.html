@@ -25,168 +25,78 @@
       color: #e53935;
       padding: 1.5rem 0 0.5rem;
     }
-    .logo img {
-      height: 70px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    .container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-    .status-icon {
-      margin-bottom: 1rem;
-    }
-    .status-icon img {
-      height: 120px;
-    }
-    .estado {
-      font-size: 2.8rem;
-      font-weight: bold;
-    }
-    .ubicacion {
-      font-size: 1.6rem;
-      margin-top: 1rem;
-    }
-    .footer-icons {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      padding: 1rem;
-      background-color: white;
-      border-top: 1px solid #ccc;
-    }
-    .footer-icons img {
-      height: 24px;
-    }
-    .alerta-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #FFA500;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    .alerta-overlay h1 {
-      font-size: 2.5rem;
-      margin: 0;
-    }
-    .alerta-overlay p {
-      font-size: 1.4rem;
-      margin: 1rem;
-      text-align: center;
-      max-width: 80%;
-    }
-    .cerrar-btn {
-      font-size: 1rem;
-      padding: 10px 20px;
-      margin-top: 20px;
-      background: #fff;
-      color: #000;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-    }
+    .logo img { height: 70px; vertical-align: middle; margin-right: 10px; }
+    .container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1rem; }
+    .status-icon img { height: 120px; }
+    .estado { font-size: 2.8rem; font-weight: bold; }
+    .ubicacion { font-size: 1.6rem; margin-top: 1rem; }
+    .footer-icons { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: center; gap: 2rem; padding: 1rem; background-color: white; border-top: 1px solid #ccc; z-index: 100; }
+    .footer-icons img { height: 24px; cursor: pointer; }
+    .alerta-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #FFA500; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+    .cerrar-btn { font-size: 1rem; padding: 10px 20px; margin-top: 20px; background: #fff; color: #000; border: none; cursor: pointer; border-radius: 8px; }
   </style>
 </head>
 <body>
-  <div class="logo">
-    <img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB
-  </div>
-
-  <div class="container" style="margin-top: auto; margin-bottom: auto;">
-    <div class="status-icon">
-      <img src="/assets/wifi.png" alt="WiFi Icon">
-    </div>
-    <div class="estado">Monitoreando Eventos</div>
-    <div class="ubicacion" id="ubicacion-texto">
-      📍 Detectando ubicación...
+  <!-- VISTA INICIO -->
+  <div id="vista-inicio" style="display:flex; flex-direction:column; min-height:100vh;">
+    <div class="logo"><img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB</div>
+    <div class="container">
+      <div class="status-icon"><img src="/assets/wifi.png" alt="WiFi Icon"></div>
+      <div class="estado">Monitoreando Eventos</div>
+      <div class="ubicacion" id="ubicacion-texto">📍 Detectando ubicación...</div>
     </div>
   </div>
 
-  <div class="footer-icons">
-    <img src="/assets/home-icon.png" alt="Inicio">
-    <img src="/assets/settings-icon.png" alt="Configuración">
+  <!-- FOOTER -->
+  <div class="footer-icons" id="footer">
+    <img src="/assets/home-icon.png" alt="Inicio" onclick="mostrarVista('inicio')">
+    <img src="/assets/settings-icon.png" alt="Configuración" onclick="mostrarVista('config')">
   </div>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js';
+  <!-- VISTA CONFIG -->
+  <div id="vista-config" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:white; z-index:10; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:2rem;">
+    <img src="/assets/icon.png" alt="SASNO Logo" style="height:50px; margin-bottom:1rem;">
+    <h1 style="font-size:2.8rem; margin-bottom:2rem;">Configuración</h1>
+    <button onclick="mostrarSimulacro()" style="padding:1rem 2rem; font-size:1.3rem; border:none; border-radius:30px; background:#004aad; color:white; cursor:pointer; margin-bottom:2rem;">PRUEBA DE ALERTA</button>
+    <div style="margin-bottom:3rem; font-size:1.6rem; font-weight:bold;">Sismos Menores <input type="checkbox" checked style="transform:scale(1.5); margin-left:1rem;"></div>
+    <h2 style="font-size:2rem;">SASNO 2025</h2>
+  </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC4nqBYRE79R_rWlpE5cqClBtA_-zx4-5I",
-      authDomain: "sasno-d79e1.firebaseapp.com",
-      projectId: "sasno-d79e1",
-      storageBucket: "sasno-d79e1.firebasestorage.app",
-      messagingSenderId: "273171190720",
-      appId: "1:273171190720:web:e9362e0d5206ac6f5c2e25",
-      measurementId: "G-ZYDYKB9VWD"
-    };
+  <!-- VISTA SIMULACRO -->
+  <div id="vista-simulacro" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#FFA500; color:white; z-index:9999; text-align:center; padding-top:2rem;">
+    <button onclick="cerrarSimulacro()" style="position:absolute; top:1rem; left:1rem; background:white; border:none; border-radius:50%; width:40px; height:40px; font-size:1.5rem; cursor:pointer;">&times;</button>
+    <img src="/assets/whitelogo.png" alt="SASNO Logo" style="height:40px; margin-bottom:1rem;">
+    <h1 style="font-size:3rem; margin:1rem 0;">¡SIMULACRO!</h1>
+    <img src="/assets/handicon.png" alt="Mano" style="height:150px; margin:1rem 0;">
+    <h2 style="font-size:2rem;">SIMULACRO DE ALERTA</h2>
+  </div>
 
-    const app = initializeApp(firebaseConfig);
-    const messaging = getMessaging(app);
-
-    const vapidKey = "TU_CLAVE_PUBLICA_VAPID";
-
-    Notification.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        getToken(messaging, { vapidKey }).then(token => {
-          console.log("FCM Token:", token);
-        });
-      }
-    });
-
-    onMessage(messaging, payload => {
-      console.log("Mensaje recibido:", payload);
-      const { title, body } = payload.notification;
-      mostrarAlerta(title, body);
-    });
-
-    function mostrarAlerta(titulo, mensaje) {
-      const alerta = document.createElement('div');
-      alerta.className = 'alerta-overlay';
-      alerta.innerHTML = `
-        <h1>${titulo}</h1>
-        <p>${mensaje}</p>
-        <button class="cerrar-btn" onclick="this.parentElement.remove()">Cerrar</button>
-      `;
-      document.body.appendChild(alerta);
+<script>
+  function mostrarVista(vista){
+    if(vista==='inicio'){
+      document.getElementById('vista-inicio').style.display='flex';
+      document.getElementById('vista-config').style.display='none';
+    }else if(vista==='config'){
+      document.getElementById('vista-inicio').style.display='none';
+      document.getElementById('vista-config').style.display='flex';
     }
+  }
+  function mostrarSimulacro(){ document.getElementById('vista-simulacro').style.display='block'; }
+  function cerrarSimulacro(){ document.getElementById('vista-simulacro').style.display='none'; }
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async position => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-
-        try {
-          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-          const data = await response.json();
-          const ciudad = data.address.city || data.address.town || data.address.village || 'tu zona';
-          const estado = data.address.state || '';
-          document.getElementById('ubicacion-texto').textContent = `📍 Alertando para: ${ciudad}, ${estado}`;
-        } catch (error) {
-          document.getElementById('ubicacion-texto').textContent = `📍 Ubicación no disponible`;
-        }
-      }, () => {
-        document.getElementById('ubicacion-texto').textContent = `📍 No se pudo obtener ubicación`;
-      });
-    } else {
-      document.getElementById('ubicacion-texto').textContent = `📍 Geolocalización no compatible`;
-    }
-  </script>
+  // GEOLOCALIZACION
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const {latitude:lat, longitude:lon}=pos.coords;
+      try{
+        const res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+        const data=await res.json();
+        const city=data.address.city||data.address.town||data.address.village||'tu zona';
+        const state=data.address.state||'';
+        document.getElementById('ubicacion-texto').textContent=`📍 Alertando para: ${city}, ${state}`;
+      }catch{document.getElementById('ubicacion-texto').textContent='📍 Ubicación no disponible';}
+    },()=>{document.getElementById('ubicacion-texto').textContent='📍 No se pudo obtener ubicación';});
+  }
+</script>
 </body>
 </html>
