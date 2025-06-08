@@ -6,11 +6,10 @@
   <title>SASNO WEB</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="/assets/icon.png">
-  <!-- Firebase compat SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+  <!-- Google Font Comfortaa -->
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family:'Segoe UI',sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; min-height:100vh; }
+    body { font-family:'Comfortaa', sans-serif; margin:0; padding:0; background:#fff; display:flex; flex-direction:column; min-height:100vh; }
     .logo { text-align:center; font-size:3.5rem; font-weight:bold; color:#e53935; padding:1.5rem 0 .5rem; }
     .logo img { height:70px; vertical-align:middle; margin-right:10px; }
     .container { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem 1rem; }
@@ -19,25 +18,22 @@
     .ubicacion { font-size:1.6rem; margin-top:1rem; }
     .footer-icons { position:fixed; bottom:0; width:100%; display:flex; justify-content:center; gap:2rem; padding:1rem; background:#fff; border-top:1px solid #ccc; z-index:100; }
     .footer-icons img { height:24px; cursor:pointer; }
-    .overlay-base { position:fixed; top:0; left:0; width:100%; height:100%; color:#fff; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; text-align:center; background:#FFA500; }
+    .overlay-base { position:fixed; top:0; left:0; width:100%; height:100%; color:#fff; display:none; flex-direction:column; justify-content:center; align-items:center; z-index:9999; text-align:center; background:#FFA500; }
+    .overlay-base.show { display:flex; }
     .overlay-btn { position:absolute; top:1.2rem; left:1.2rem; background:#fff; border:none; border-radius:50%; width:48px; height:48px; font-size:2rem; cursor:pointer; color:#000; }
   </style>
+  <!-- Pusher -->
+  <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 </head>
 <body>
   <!-- VISTA INICIO -->
-  <div id="vista-inicio" style="display:flex; flex-direction:column; min-height:100vh;">
+  <div id="vista-inicio">
     <div class="logo"><img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB</div>
     <div class="container">
       <div class="status-icon"><img src="/assets/wifi.png" alt="WiFi Icon"></div>
       <div class="estado">Monitoreando Eventos</div>
       <div class="ubicacion" id="ubicacion-texto">📍 Detectando ubicación...</div>
     </div>
-  </div>
-
-  <!-- FOOTER -->
-  <div class="footer-icons">
-    <img id="home-icon" src="/assets/home-icon.png" alt="Inicio">
-    <img id="settings-icon" src="/assets/settings-icon.png" alt="Configuración">
   </div>
 
   <!-- VISTA CONFIG -->
@@ -49,9 +45,15 @@
     <h2 style="font-size:2.2rem;">SASNO 2025</h2>
   </div>
 
+  <!-- FOOTER -->
+  <div class="footer-icons">
+    <img id="home-icon" src="/assets/home-icon.png" alt="Inicio">
+    <img id="settings-icon" src="/assets/settings-icon.png" alt="Configuración">
+  </div>
+
   <!-- VISTA ALERTA / SIMULACRO -->
-  <div id="vista-simulacro" class="overlay-base" style="display:none;">
-    <button class="overlay-btn" onclick="cerrarSimulacro()">&times;</button>
+  <div id="vista-simulacro" class="overlay-base">
+    <button class="overlay-btn" onclick="cerrarOverlay()">&times;</button>
     <img src="/assets/whitelogo.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
     <h1 id="sim-title" style="font-size:4rem; margin:1.2rem 0;">¡SIMULACRO!</h1>
     <img src="/assets/handicon.png" alt="Mano" style="height:200px; margin:1.2rem 0;">
@@ -61,67 +63,59 @@
   <audio id="alertaudio" src="/assets/alertaudio.mp3" preload="auto"></audio>
 
   <script>
-    // Asignar eventos al cargar DOM
+    // Solicitar permiso notificaciones
+    if (Notification.permission === 'default') Notification.requestPermission();
+
+    // UI Navigation
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('home-icon').addEventListener('click', () => mostrarVista('inicio'));
-      document.getElementById('settings-icon').addEventListener('click', () => mostrarVista('config'));
-      document.getElementById('alert-test-btn').addEventListener('click', mostrarSimulacro);
-      // Mostrar vista de inicio al cargar
-      mostrarVista('inicio');
+      document.getElementById('home-icon').onclick = () => switchView('inicio');
+      document.getElementById('settings-icon').onclick = () => switchView('config');
+      document.getElementById('alert-test-btn').onclick = () => triggerOverlay('¡SIMULACRO!', 'SIMULACRO DE ALERTA');
+      switchView('inicio');
     });
 
-    // VISTAS
-    function mostrarVista(v) {
-      document.getElementById('vista-inicio').style.display = v==='inicio' ? 'flex' : 'none';
-      document.getElementById('vista-config').style.display = v==='config' ? 'flex' : 'none';
+    function switchView(view) {
+      document.getElementById('vista-inicio').style.display = view==='inicio'? 'block':'none';
+      document.getElementById('vista-config').style.display = view==='config'? 'flex':'none';
     }
 
-    // SIMULACRO
-    function mostrarSimulacro() { prepararOverlay('¡SIMULACRO!', 'SIMULACRO DE ALERTA'); }
-    function cerrarSimulacro() {
-      document.getElementById('vista-simulacro').style.display = 'none';
-      const audio = document.getElementById('alertaudio'); audio.pause(); audio.currentTime = 0;
-      clearTimeout(window._simTimer);
-      mostrarVista('inicio');
+    function closeOverlay() {
+      document.getElementById('vista-simulacro').classList.remove('show');
+      resetAudio();
+      switchView('inicio');
     }
-    function prepararOverlay(titulo, subtitulo) {
-      const sim = document.getElementById('vista-simulacro');
-      document.getElementById('sim-title').textContent = titulo;
-      document.getElementById('sim-subtitle').textContent = subtitulo;
-      sim.style.display = 'flex';
-      const audio = document.getElementById('alertaudio'); audio.currentTime = 0; audio.play();
-      clearTimeout(window._simTimer);
-      window._simTimer = setTimeout(cerrarSimulacro, 60000);
+    window.cerrarOverlay = closeOverlay;
+
+    function triggerOverlay(title, subtitle) {
+      // Mostrar overlay
+      document.getElementById('sim-title').textContent = title;
+      document.getElementById('sim-subtitle').textContent = subtitle;
+      document.getElementById('vista-simulacro').classList.add('show');
+      resetAudio(); document.getElementById('alertaudio').play();
+      // Notificación local
+      if (Notification.permission === 'granted') {
+        new Notification(title, { body: subtitle, icon: '/assets/icon.png' });
+      }
+      clearTimeout(window._timer);
+      window._timer = setTimeout(closeOverlay, 60000);
     }
 
-    // FIREBASE
-    const firebaseConfig = { apiKey: "AIzaSyC4nqBYRE79R_rWlpE5cqClBtA_-zx4-5I", authDomain: "sasno-d79e1.firebaseapp.com", projectId: "sasno-d79e1", storageBucket: "sasno-d79e1.firebasestorage.app", messagingSenderId: "273171190720", appId: "1:273171190720:web:e9362e0d5206ac6f5c2e25", measurementId: "G-ZYDYKB9VWD" };
-    firebase.initializeApp(firebaseConfig);
-    const messaging = firebase.messaging();
-    const vapidKey = "BFKfPrQ6TTSWqmcIComLgdr5wsOJA8u8vVziPRtlDtexx0E1BXHUkobGZcikk8FKK-2E6_tsCPLvF40gv_uvwpY";
-
-    function askNotificationPermission() {
-      if (Notification.permission === 'default') {
-        Notification.requestPermission().then(p => { if (p==='granted') getFcmToken(); });
-      } else if (Notification.permission==='granted') { getFcmToken(); }
+    function resetAudio() {
+      const audio = document.getElementById('alertaudio');
+      audio.pause(); audio.currentTime = 0;
     }
-    function getFcmToken() {
-      messaging.getToken({ vapidKey }).then(token => {
-        console.log('FCM Token:', token);
-        fetch(`/subscribe?token=${token}&topic=EQWWEB`, { method:'POST' })
-          .then(() => console.log('Suscrito al topic EQWWEB'))
-          .catch(err => console.error('Error suscribiendo al topic:', err));
-      }).catch(err => console.error('Token error', err));
-    }
-    document.addEventListener('click', askNotificationPermission, { once:true });
-    messaging.onMessage(payload => { if (payload.data?.event==='eqw') prepararOverlay('¡ALERTA SÍSMICA!', 'Mantén la calma y evacúa de inmediato o sigue tus protocolos establecidos.'); });
 
-    // GEOLOCALIZACIÓN
+    // Pusher setup
+    const pusher = new Pusher('0f74c31648d3adb34e1b', { cluster: 'us2', forceTLS: true });
+    const channel = pusher.subscribe('alertas-sasno');
+    channel.bind('eqw', data => triggerOverlay(data.titulo, data.cuerpo));
+
+    // Geolocation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async pos => {
-        const { latitude: lat, longitude: lon } = pos.coords;
+        const { latitude, longitude } = pos.coords;
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
           const data = await res.json();
           const city = data.address.city || data.address.town || data.address.village || 'tu zona';
           const state = data.address.state || '';
@@ -129,7 +123,7 @@
         } catch {
           document.getElementById('ubicacion-texto').textContent = '📍 Ubicación no disponible';
         }
-      }, () => { document.getElementById('ubicacion-texto').textContent = '📍 No se pudo obtener ubicación'; });
+      }, () => document.getElementById('ubicacion-texto').textContent = '📍 No se pudo obtener ubicación');
     } else {
       document.getElementById('ubicacion-texto').textContent = '📍 Geolocalización no compatible';
     }
