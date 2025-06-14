@@ -7,41 +7,36 @@
 
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="assets/icon.png">
-
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
-
   <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
   <style>
-    /* --------  ESTILOS GENERALES  -------- */
     body{margin:0;padding:0;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;min-height:100vh;background:#fff}
+    /* inicio */
     .logo{font-size:3.5rem;font-weight:bold;color:#e53935;text-align:center;padding:1.5rem 0 .5rem}
     .logo img{height:70px;margin-right:10px;vertical-align:middle}
     .container{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem}
     .status-icon img{height:120px}
-    .estado{font-size:2.8rem;font-weight:bold}
-    .ubicacion{margin-top:1rem;font-size:1.6rem}
+    .estado{font-size:2.8rem;font-weight:bold}.ubicacion{margin-top:1rem;font-size:1.6rem}
+    /* footer */
     .footer-icons{position:fixed;bottom:0;width:100%;display:flex;justify-content:center;gap:2rem;padding:1rem;border-top:1px solid #ccc;background:#fff;z-index:100}
     .footer-icons img{height:24px;cursor:pointer}
-
-    /* --------  OVERLAY EQW  -------- */
+    /* overlay EQW */
     .overlay-base{position:fixed;top:0;left:0;width:100%;height:100%;background:#FFA500;color:#fff;display:none;flex-direction:column;justify-content:center;align-items:center;text-align:center;z-index:9999}
     .overlay-base.show{display:flex}
     .overlay-btn{position:absolute;top:1.2rem;left:1.2rem;width:48px;height:48px;font-size:2rem;border:none;border-radius:50%;background:#fff;color:#000;cursor:pointer;z-index:10000}
-
-    /* --------  POP LATERAL  -------- */
-    #popup-container{position:fixed;top:20px;right:20px;width:400px;height:400px;background:#000;border-radius:15px;box-shadow:0 0 20px rgba(0,0,0,.5);display:none;z-index:99999}
+    /* pop */
+    #popup-container{position:fixed;top:20px;right:20px;width:200px;height:200px;background:#000;border-radius:15px;box-shadow:0 0 20px rgba(0,0,0,.5);display:none;z-index:99999}
     #popup-frame{width:100%;height:100%;border:none;border-radius:15px}
-
-    /* --------  ADVISORY FULLSCREEN  -------- */
+    /* advisory */
     #advisory-fullscreen{position:fixed;top:0;left:0;width:100%;height:100%;display:none;z-index:99998}
     #advisory-frame{width:100%;height:100%;border:none}
+    #advisory-close{position:fixed;top:20px;right:20px;width:50px;height:50px;font-size:2rem;border:none;border-radius:50%;background:#fff;color:#000;font-weight:bold;cursor:pointer;display:none;z-index:10000;box-shadow:0 0 10px rgba(0,0,0,.5)}
   </style>
 </head>
 <body>
 
-<!-- ----------  VISTA INICIO  ---------- -->
+<!-- INICIO -->
 <div id="vista-inicio">
   <div class="logo"><img src="assets/icon.png" alt="logo"> SASNO WEB</div>
   <div class="container">
@@ -51,22 +46,25 @@
   </div>
 </div>
 
-<!-- ----------  VISTA CONFIG  ---------- -->
+<!-- CONFIGURACIÓN -->
 <div id="vista-config" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem">
   <img src="assets/icon.png" alt="logo" style="height:60px;margin-bottom:1.5rem">
   <h1 style="font-size:3rem;margin-bottom:2.5rem">Configuración</h1>
   <button id="alert-test-btn" style="padding:1.2rem 2.4rem;font-size:1.5rem;border:none;border-radius:30px;background:#004aad;color:#fff;cursor:pointer;margin-bottom:2.5rem">PRUEBA DE ALERTA</button>
-  <div style="margin-bottom:3.5rem;font-size:1.8rem;font-weight:bold">Sismos Menores <input type="checkbox" checked style="transform:scale(1.6);margin-left:1rem"></div>
+  <div style="margin-bottom:3.5rem;font-size:1.8rem;font-weight:bold">
+    Sismos Menores 
+    <input id="minor-toggle" type="checkbox" checked style="transform:scale(1.6);margin-left:1rem">
+  </div>
   <h2 style="font-size:2.2rem">SASNO 2025</h2>
 </div>
 
-<!-- ----------  FOOTER  ---------- -->
+<!-- FOOTER -->
 <div class="footer-icons">
-  <img id="home-icon"    src="assets/home-icon.png"     alt="home">
+  <img id="home-icon" src="assets/home-icon.png" alt="home">
   <img id="settings-icon" src="assets/settings-icon.png" alt="settings">
 </div>
 
-<!-- ----------  OVERLAY NARANJA EQW  ---------- -->
+<!-- OVERLAY EQW -->
 <div id="vista-simulacro" class="overlay-base">
   <button class="overlay-btn" onclick="cerrarSimulacro()">×</button>
   <img src="assets/whitelogo.png" alt="logo" style="height:60px;margin-bottom:1.5rem">
@@ -75,48 +73,47 @@
   <h2 id="sim-subtitle" style="font-size:2.5rem">Mantén la calma</h2>
 </div>
 
-<!-- ----------  POP LATERAL  ---------- -->
+<!-- POP -->
 <div id="popup-container"><iframe id="popup-frame"></iframe></div>
 
-<!-- ----------  ADVISORY FULLSCREEN  ---------- -->
+<!-- ADVISORY -->
 <div id="advisory-fullscreen"><iframe id="advisory-frame"></iframe></div>
+<button id="advisory-close" onclick="cerrarAdvisory()">×</button>
 
-<!-- ----------  AUDIO  ---------- -->
+<!-- AUDIO -->
 <audio id="alertaudio" src="assets/alertaudio.mp3" preload="auto"></audio>
 
 <script>
-/* ------------------  VARIABLES DOM  ------------------ */
-const vistaInicio          = document.getElementById('vista-inicio');
-const vistaConfig          = document.getElementById('vista-config');
-const vistaSimulacro       = document.getElementById('vista-simulacro');
-const popupContainer       = document.getElementById('popup-container');
-const popupFrame           = document.getElementById('popup-frame');
-const advisoryFullscreen   = document.getElementById('advisory-fullscreen');
-const advisoryFrame        = document.getElementById('advisory-frame');
+/* --------- DOM refs --------- */
+const vistaInicio=document.getElementById('vista-inicio');
+const vistaConfig=document.getElementById('vista-config');
+const vistaSimulacro=document.getElementById('vista-simulacro');
+const popupContainer=document.getElementById('popup-container');
+const popupFrame=document.getElementById('popup-frame');
+const advisoryFullscreen=document.getElementById('advisory-fullscreen');
+const advisoryFrame=document.getElementById('advisory-frame');
+const advisoryClose=document.getElementById('advisory-close');
+const ubicacionTexto=document.getElementById('ubicacion-texto');
+const simTitle=document.getElementById('sim-title');
+const simSubtitle=document.getElementById('sim-subtitle');
+const alertaudio=document.getElementById('alertaudio');
+const minorToggle=document.getElementById('minor-toggle');
 
-const homeIcon             = document.getElementById('home-icon');
-const settingsIcon         = document.getElementById('settings-icon');
-const alertTestBtn         = document.getElementById('alert-test-btn');
-const ubicacionTexto       = document.getElementById('ubicacion-texto');
-const simTitle             = document.getElementById('sim-title');
-const simSubtitle          = document.getElementById('sim-subtitle');
-const alertaudio           = document.getElementById('alertaudio');
-
-/* ------------------  AUDIO / INTERACCIÓN  ------------------ */
+/* --------- Audio permission --------- */
 let userInteracted=false;
 document.addEventListener('click',()=>userInteracted=true,{once:true});
 document.addEventListener('touchstart',()=>userInteracted=true,{once:true});
 function resetAudio(){alertaudio.pause();alertaudio.currentTime=0;}
 
-/* ------------------  VISTAS BÁSICAS  ------------------ */
+/* --------- Navegación --------- */
 function switchView(v){
-  vistaInicio.style.display = v==='inicio' ? 'block':'none';
-  vistaConfig.style.display = v==='config' ? 'flex' :'none';
+  vistaInicio.style.display=v==='inicio'?'block':'none';
+  vistaConfig.style.display=v==='config'?'flex':'none';
 }
-homeIcon.onclick     = ()=>switchView('inicio');
-settingsIcon.onclick = ()=>switchView('config');
+homeIcon.onclick=()=>switchView('inicio');
+settingsIcon.onclick=()=>switchView('config');
 
-/* ------------------  OVERLAY EQW  ------------------ */
+/* --------- Overlay EQW --------- */
 function triggerOverlay(titulo,sub){
   simTitle.textContent=titulo;
   simSubtitle.textContent=sub;
@@ -129,26 +126,37 @@ function triggerOverlay(titulo,sub){
 function cerrarSimulacro(){
   vistaSimulacro.classList.remove('show');
   popupContainer.style.display='none';
-  advisoryFullscreen.style.display='none';
+  cerrarAdvisory();
   resetAudio();
 }
 alertTestBtn.onclick=()=>triggerOverlay('¡SIMULACRO!','Prueba de alerta');
 
-/* ------------------  PUSHER  ------------------ */
+/* --------- Cerrar advisory (botón o mensaje) --------- */
+function cerrarAdvisory(){
+  advisoryFullscreen.style.display='none';
+  advisoryClose.style.display='none';
+}
+window.addEventListener('message',e=>{if(e.data==='cerrarAdvisory') cerrarAdvisory();});
+
+/* --------- Pusher --------- */
 const pusher=new Pusher('0f74c31648d3adb34e1b',{cluster:'us2',forceTLS:true});
 pusher.subscribe('alertas-sasno').bind('eqw',data=>{
   const {latitud,longitud,tipo}=data;
+  const allowAdvisory=minorToggle.checked;
+
   if(tipo==='advisory'){
-    // Advisory a pantalla completa + pop lateral
+    if(!allowAdvisory) return;                // Ignorar si está apagado
+    cerrarSimulacro();                        // Asegura que overlay EQW no esté visible
     advisoryFrame.src=`advisory.html?lat=${latitud}&lon=${longitud}`;
     advisoryFullscreen.style.display='block';
-
+    advisoryClose.style.display='block';
     popupFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=advisory`;
     popupContainer.style.display='block';
-
     vistaInicio.style.display='none';
     vistaConfig.style.display='none';
   }else{
+    // Cualquier EQW: máxima prioridad
+    cerrarAdvisory();                         // Apaga advisory si estaba activo
     triggerOverlay('¡ALERTA SÍSMICA!','Mantén la calma');
     if(latitud&&longitud){
       popupFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=eqw`;
@@ -157,20 +165,14 @@ pusher.subscribe('alertas-sasno').bind('eqw',data=>{
   }
 });
 
-/* ----------  CIERRE DEL ADVISORY VÍA postMessage  ---------- */
-window.addEventListener('message',e=>{
-  if(e.data==='cerrarAdvisory') advisoryFullscreen.style.display='none';
-});
-
-/* ----------  GEO UBICACIÓN  ---------- */
+/* --------- Geolocalización texto --------- */
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(async p=>{
     try{
       const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
       const d=await r.json();
       const city=d.address.city||d.address.town||d.address.village||'tu zona';
-      const state=d.address.state||'';
-      ubicacionTexto.textContent=`📍 Alertando para: ${city}, ${state}`;
+      ubicacionTexto.textContent=`📍 Alertando para: ${city}, ${d.address.state||''}`;
     }catch{ubicacionTexto.textContent='📍 Ubicación no disponible';}
   },()=>ubicacionTexto.textContent='📍 No se pudo obtener ubicación');
 }else ubicacionTexto.textContent='📍 Geolocalización no compatible';
