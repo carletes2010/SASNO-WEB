@@ -133,6 +133,13 @@ channel.bind('eqw', data => {
     }
   }
 });
+
+// Aquí agregamos el listener para cerrar el advisory al recibir el mensaje desde el iframe
+window.addEventListener("message", (event) => {
+  if (event.data === "cerrarAdvisory") {
+    document.getElementById("advisory-fullscreen").style.display = "none";
+  }
+});
 </script>
 
 </body>
