@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Alerta Sísmica SASNO - Advisory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    body { margin: 0; padding: 0; background: #000; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+  </style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiYWx6b2FsZXJ0YXNpc21pY2EiLCJhIjoiY2wyNHM2c25vMjNoejNpcWRrb3Y4MzV6ciJ9.D2pXLxF0emuIHvrW-n181Q';
+
+  // Obtener coordenadas del query string
+  const params = new URLSearchParams(window.location.search);
+  const lat = parseFloat(params.get('lat') || '16.85');
+  const lon = parseFloat(params.get('lon') || '-99.91');
+  const epicenter = [lon, lat];
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v12',
+    center: epicenter,
+    zoom: 5.3
+  });
+
+  map.on('load', () => {
+    map.addSource('ondaP', { type: 'geojson', data: emptyPolygon() });
+    map.addLayer({ 
+      id: 'ondaP-layer', 
+      type: 'fill', 
+      source: 'ondaP', 
+      paint: { 
+        'fill-color': '#800080', 
+        'fill-opacity': 0.45,
+        'fill-outline-color': '#a000a0' 
+      } 
+    });
+
+    map.addSource('ondaS', { type: 'geojson', data: emptyPolygon() });
+    map.addLayer({ 
+      id: 'ondaS-layer', 
+      type: 'fill', 
+      source: 'ondaS', 
+      paint: { 
+        'fill-color': '#e5be01', 
+        'fill-opacity': 0.40,
+        'fill-outline-color': '#f5d001' 
+      } 
+    });
+
+    iniciarAnimacion();
+  });
+
+  function iniciarAnimacion() {
+    const velocidadP = 8000;
+    const velocidadS = 5000;
+    const duracionMaxima = 140;
+    let start = null;
+
+    function frame(timestamp) {
+      if (!start) start = timestamp;
+      const elapsed = (timestamp - start) / 1000;
+
+      if (elapsed > duracionMaxima) {
+        map.getSource('ondaP').setData(emptyPolygon());
+        map.getSource('ondaS').setData(emptyPolygon());
+        return;
+      }
+
+      const radioP = velocidadP * elapsed;
+      const radioS = velocidadS * elapsed;
+
+      map.getSource('ondaP').setData({
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [createCircle(epicenter, radioP)] }
+      });
+
+      map.getSource('ondaS').setData({
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [createCircle(epicenter, radioS)] }
+      });
+
+      requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  function emptyPolygon() {
+    return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[]] } };
+  }
+
+  function createCircle(center, radiusInMeters, points = 128) {
+    const coords = [];
+    const distanceX = radiusInMeters / (111320 * Math.cos(center[1] * Math.PI / 180));
+    const distanceY = radiusInMeters / 110574;
+    for (let i = 0; i <= points; i++) {
+      const theta = (i / points) * (2 * Math.PI);
+      const x = distanceX * Math.cos(theta);
+      const y = distanceY * Math.sin(theta);
+      coords.push([center[0] + x, center[1] + y]);
+    }
+    return coords;
+  }
+</script>
+
+</body>
+</html>
