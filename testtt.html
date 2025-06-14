@@ -3,144 +3,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SASNO WEB PRO FINAL CON ADVISORY FULL</title>
+  <title>SASNO WEB PRO FINAL</title>
+
+  <!-- Manifest / ícono -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="assets/icon.png">
+
+  <!-- Comfortaa Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <!-- Pusher -->
   <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
+
   <style>
-    body { font-family: 'Comfortaa', sans-serif; margin: 0; padding: 0; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
-    .logo { text-align: center; font-size: 3.5rem; font-weight: bold; color: #e53935; padding: 1.5rem 0 .5rem; }
-    .logo img { height: 70px; vertical-align: middle; margin-right: 10px; }
-    .container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1rem; }
-    .status-icon img { height: 120px; }
-    .estado { font-size: 2.8rem; font-weight: bold; }
-    .ubicacion { font-size: 1.6rem; margin-top: 1rem; }
-    .footer-icons { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: center; gap: 2rem; padding: 1rem; background: #fff; border-top: 1px solid #ccc; z-index: 100; }
-    .footer-icons img { height: 24px; cursor: pointer; }
-    .overlay-base { position: fixed; top: 0; left: 0; width: 100%; height: 100%; color: #fff; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; text-align: center; background: #FFA500; }
-    .overlay-base.show { display: flex; }
-    .overlay-btn { position: absolute; top: 1.2rem; left: 1.2rem; background: #fff; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 2rem; cursor: pointer; color: #000; }
-    #popup-container { position: fixed; top: 20px; right: 20px; width: 400px; height: 400px; z-index: 99999; display: none; background: #000; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-    #popup-frame { width: 100%; height: 100%; border: none; border-radius: 15px; }
-    #advisory-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99998; display: none; }
-    #advisory-frame { width: 100%; height: 100%; border: none; }
+    /* Estructura general */
+    body{margin:0;padding:0;font-family:'Comfortaa',sans-serif;display:flex;flex-direction:column;min-height:100vh;background:#fff}
+
+    /* Logo y estado */
+    .logo{font-size:3.5rem;font-weight:bold;color:#e53935;text-align:center;padding:1.5rem 0 .5rem}
+    .logo img{height:70px;margin-right:10px;vertical-align:middle}
+    .container{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem}
+    .status-icon img{height:120px}
+    .estado{font-size:2.8rem;font-weight:bold}
+    .ubicacion{margin-top:1rem;font-size:1.6rem}
+
+    /* Footer */
+    .footer-icons{position:fixed;bottom:0;width:100%;display:flex;justify-content:center;gap:2rem;padding:1rem;border-top:1px solid #ccc;background:#fff;z-index:100}
+    .footer-icons img{height:24px;cursor:pointer}
+
+    /* Overlay naranja EQW */
+    .overlay-base{position:fixed;top:0;left:0;width:100%;height:100%;background:#FFA500;color:#fff;display:none;flex-direction:column;justify-content:center;align-items:center;text-align:center;z-index:9999}
+    .overlay-base.show{display:flex}
+    .overlay-btn{position:absolute;top:1.2rem;left:1.2rem;width:48px;height:48px;font-size:2rem;border:none;border-radius:50%;background:#fff;color:#000;cursor:pointer;z-index:10000}
+
+    /* Pop lateral */
+    #popup-container{position:fixed;top:20px;right:20px;width:200px;height:300px;background:#000;border-radius:15px;box-shadow:0 0 20px rgba(0,0,0,.5);display:none;z-index:99999}
+    #popup-frame{width:100%;height:100%;border:none;border-radius:15px}
+
+    /* Advisory fullscreen */
+    #advisory-fullscreen{position:fixed;top:0;left:0;width:100%;height:100%;display:none;z-index:99998}
+    #advisory-frame{width:100%;height:100%;border:none}
   </style>
 </head>
-
 <body>
-
-<div id="vista-inicio">
-  <div class="logo"><img src="assets/icon.png" alt="SASNO Logo"> SASNO WEB</div>
-  <div class="container">
-    <div class="status-icon"><img src="assets/wifi.png" alt="WiFi Icon"></div>
-    <div class="estado">Monitoreando Eventos</div>
-    <div class="ubicacion" id="ubicacion-texto">📍 Detectando ubicación...</div>
+  <!-- Vista inicio -->
+  <div id="vista-inicio">
+    <div class="logo"><img src="assets/icon.png" alt="logo"> SASNO WEB</div>
+    <div class="container">
+      <div class="status-icon"><img src="assets/wifi.png" alt="wifi"></div>
+      <div class="estado">Monitoreando Eventos</div>
+      <div class="ubicacion" id="ubicacion-texto">📍 Detectando ubicación…</div>
+    </div>
   </div>
-</div>
 
-<div id="vista-config" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:#fff; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem;">
-  <img src="assets/icon.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
-  <h1 style="font-size:3rem; margin-bottom:2.5rem;">Configuración</h1>
-  <button id="alert-test-btn" style="padding:1.2rem 2.4rem; font-size:1.5rem; border:none; border-radius:30px; background:#004aad; color:#fff; cursor:pointer; margin-bottom:2.5rem;">PRUEBA DE ALERTA</button>
-  <div style="margin-bottom:3.5rem; font-size:1.8rem; font-weight:bold;">Sismos Menores <input type="checkbox" checked style="transform:scale(1.6); margin-left:1rem;"></div>
-  <h2 style="font-size:2.2rem;">SASNO 2025</h2>
-</div>
+  <!-- Vista configuración -->
+  <div id="vista-config" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem">
+    <img src="assets/icon.png" alt="logo" style="height:60px;margin-bottom:1.5rem">
+    <h1 style="font-size:3rem;margin-bottom:2.5rem">Configuración</h1>
+    <button id="alert-test-btn" style="padding:1.2rem 2.4rem;font-size:1.5rem;border:none;border-radius:30px;background:#004aad;color:#fff;cursor:pointer;margin-bottom:2.5rem">PRUEBA DE ALERTA</button>
+    <div style="margin-bottom:3.5rem;font-size:1.8rem;font-weight:bold">Sismos Menores <input type="checkbox" checked style="transform:scale(1.6);margin-left:1rem"></div>
+    <h2 style="font-size:2.2rem">SASNO 2025</h2>
+  </div>
 
-<div class="footer-icons">
-  <img id="home-icon" src="assets/home-icon.png" alt="Inicio">
-  <img id="settings-icon" src="assets/settings-icon.png" alt="Configuración">
-</div>
+  <!-- Footer -->
+  <div class="footer-icons">
+    <img id="home-icon" src="assets/home-icon.png" alt="home">
+    <img id="settings-icon" src="assets/settings-icon.png" alt="settings">
+  </div>
 
-<div id="vista-simulacro" class="overlay-base">
-  <button class="overlay-btn" onclick="cerrarSimulacro()">&times;</button>
-  <img src="assets/whitelogo.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
-  <h1 id="sim-title" style="font-size:4rem; margin:1.2rem 0;">¡ALERTA SÍSMICA!</h1>
-  <img src="assets/handicon.png" alt="Mano" style="height:200px; margin:1.2rem 0;">
-  <h2 id="sim-subtitle" style="font-size:2.5rem;">Mantén la calma</h2>
-</div>
+  <!-- Overlay naranja (EQW) -->
+  <div id="vista-simulacro" class="overlay-base">
+    <button class="overlay-btn" onclick="cerrarSimulacro()">×</button>
+    <img src="assets/whitelogo.png" alt="logo" style="height:60px;margin-bottom:1.5rem">
+    <h1 id="sim-title" style="font-size:4rem;margin:1.2rem 0">¡ALERTA SÍSMICA!</h1>
+    <img src="assets/handicon.png" alt="mano" style="height:200px;margin:1.2rem 0">
+    <h2 id="sim-subtitle" style="font-size:2.5rem">Mantén la calma</h2>
+  </div>
 
-<div id="popup-container">
-  <iframe id="popup-frame" src=""></iframe>
-</div>
+  <!-- Pop lateral -->
+  <div id="popup-container"><iframe id="popup-frame"></iframe></div>
 
-<div id="advisory-fullscreen">
-  <iframe id="advisory-frame" src=""></iframe>
-</div>
+  <!-- Advisory fullscreen -->
+  <div id="advisory-fullscreen"><iframe id="advisory-frame"></iframe></div>
 
-<audio id="alertaudio" src="assets/alertaudio.mp3" preload="auto"></audio>
+  <!-- Audio -->
+  <audio id="alertaudio" src="assets/alertaudio.mp3" preload="auto"></audio>
 
 <script>
-let userInteracted = false;
-document.addEventListener('click', () => userInteracted = true);
-document.addEventListener('touchstart', () => userInteracted = true);
+/* ----- Interacción inicial para permitir audio ----- */
+let userInteracted=false;
+document.addEventListener('click',()=>userInteracted=true);
+document.addEventListener('touchstart',()=>userInteracted=true);
 
-document.getElementById('home-icon').onclick = () => switchView('inicio');
-document.getElementById('settings-icon').onclick = () => switchView('config');
-document.getElementById('alert-test-btn').onclick = () => {
-  triggerOverlay("¡SIMULACRO!", "Prueba de alerta");
-};
-
-function switchView(view) {
-  document.getElementById('vista-inicio').style.display = view==='inicio'? 'block':'none';
-  document.getElementById('vista-config').style.display = view==='config'? 'flex':'none';
+/* ----- Navegación simple ----- */
+function switchView(v){
+  vistaInicio.style.display= v==='inicio' ?'block':'none';
+  vistaConfig.style.display= v==='config' ?'flex':'none';
 }
+const vistaInicio=document.getElementById('vista-inicio');
+const vistaConfig=document.getElementById('vista-config');
+homeIcon.onclick=()=>switchView('inicio');
+settingsIcon.onclick=()=>switchView('config');
 
-function cerrarSimulacro() {
-  document.getElementById('vista-simulacro').classList.remove('show');
-  document.getElementById('popup-container').style.display = "none";
-  document.getElementById('advisory-fullscreen').style.display = "none";
+/* ----- Funciones EQW ----- */
+function resetAudio(){alertaudio.pause();alertaudio.currentTime=0;}
+function triggerOverlay(titulo,sub){
+  simTitle.textContent=titulo;
+  simSubtitle.textContent=sub;
+  vistaSimulacro.classList.add('show');
   resetAudio();
-}
-
-function triggerOverlay(title, subtitle) {
-  document.getElementById('sim-title').textContent = title;
-  document.getElementById('sim-subtitle').textContent = subtitle;
-  document.getElementById('vista-simulacro').classList.add('show');
-  resetAudio();
-  if (userInteracted) document.getElementById('alertaudio').play();
+  if(userInteracted) alertaudio.play();
   clearTimeout(window._simTimer);
-  window._simTimer = setTimeout(cerrarSimulacro, 60000);
+  window._simTimer=setTimeout(cerrarSimulacro,60000);
+}
+function cerrarSimulacro(){
+  vistaSimulacro.classList.remove('show');
+  popupContainer.style.display='none';
+  advisoryFullscreen.style.display='none';
+  resetAudio();
 }
 
-function resetAudio() {
-  const audio = document.getElementById('alertaudio');
-  audio.pause();
-  audio.currentTime = 0;
-}
+/* ----- Botón de prueba de alerta ----- */
+alertTestBtn.onclick=()=>triggerOverlay('¡SIMULACRO!','Prueba de alerta');
 
-const pusher = new Pusher('0f74c31648d3adb34e1b', { cluster: 'us2', forceTLS: true });
-const channel = pusher.subscribe('alertas-sasno');
+/* ----- Pusher ----- */
+const pusher=new Pusher('0f74c31648d3adb34e1b',{cluster:'us2',forceTLS:true});
+pusher.subscribe('alertas-sasno').bind('eqw',data=>{
+  const {latitud,longitud,tipo}=data;
+  if(tipo==='advisory'){
+    /* Advisory fullscreen + pop lateral */
+    advisoryFrame.src=`advisory.html?lat=${latitud}&lon=${longitud}`;
+    advisoryFullscreen.style.display='block';
 
-channel.bind('eqw', data => {
-  if (data.tipo === "advisory") {
-    document.getElementById('vista-inicio').style.display = 'none';
-    document.getElementById('vista-config').style.display = 'none';
-    
-    const advisoryURL = `advisory.html?lat=${data.latitud}&lon=${data.longitud}`;
-    document.getElementById("advisory-frame").src = advisoryURL;
-    document.getElementById("advisory-fullscreen").style.display = "block";
+    popupFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=advisory`;
+    popupContainer.style.display='block';
 
-    const popURL = `pop.html?lat=${data.latitud}&lon=${data.longitud}`;
-    document.getElementById("popup-frame").src = popURL;
-    document.getElementById("popup-container").style.display = "block";
-  } else {
-    triggerOverlay('¡ALERTA SÍSMICA!', 'Mantén la calma');
-    if (data.latitud && data.longitud) {
-      const url = `pop.html?lat=${data.latitud}&lon=${data.longitud}`;
-      document.getElementById("popup-frame").src = url;
-      document.getElementById("popup-container").style.display = "block";
+    /* Ocultar vistas base */
+    vistaInicio.style.display='none';
+    vistaConfig.style.display='none';
+  }else{
+    triggerOverlay('¡ALERTA SÍSMICA!','Mantén la calma');
+    if(latitud&&longitud){
+      popupFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=eqw`;
+      popupContainer.style.display='block';
     }
   }
 });
 
-// Aquí agregamos el listener para cerrar el advisory al recibir el mensaje desde el iframe
-window.addEventListener("message", (event) => {
-  if (event.data === "cerrarAdvisory") {
-    document.getElementById("advisory-fullscreen").style.display = "none";
-  }
+/* ----- Cerrar advisory desde el iframe (postMessage) ----- */
+window.addEventListener('message',e=>{
+  if(e.data==='cerrarAdvisory') advisoryFullscreen.style.display='none';
 });
-</script>
 
+/* ----- Geo texto ----- */
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(async p=>{
+    try{
+      const res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
+      const d=await res.json();
+      ubicacionTexto.textContent=`📍 Alertando para: ${(d.address.city||d.address.town||d.address.village||'tu zona')}, ${d.address.state||''}`;
+    }catch{ubicacionTexto.textContent='📍 Ubicación no disponible';}
+  },()=>ubicacionTexto.textContent='📍 No se pudo obtener ubicación');
+}else ubicacionTexto.textContent='📍 Geolocalización no compatible';
+</script>
 </body>
 </html>
