@@ -104,15 +104,27 @@ function resetAudio() {
 const pusher = new Pusher('0f74c31648d3adb34e1b', { cluster: 'us2', forceTLS: true });
 const channel = pusher.subscribe('alertas-sasno');
 
+// EQW NORMAL
 channel.bind('eqw', data => {
   triggerOverlay('¡ALERTA SÍSMICA!', 'Mantén la calma');
   if (data.latitud && data.longitud) {
-    const url = `poptest.html?lat=${data.latitud}&lon=${data.longitud}`;
+    const url = `poptest.html?modo=eqw&lat=${data.latitud}&lon=${data.longitud}`;
     document.getElementById("popup-frame").src = url;
     document.getElementById("popup-container").style.display = "block";
   }
 });
 
+// ADVISORY (SISMO MENOR)
+channel.bind('advisory', data => {
+  triggerOverlay('SISMO EN PROGRESO', 'Revisión en curso');
+  if (data.latitud && data.longitud) {
+    const url = `poptest.html?modo=advisory&lat=${data.latitud}&lon=${data.longitud}`;
+    document.getElementById("popup-frame").src = url;
+    document.getElementById("popup-container").style.display = "block";
+  }
+});
+
+// GEOLOCALIZACIÓN INICIAL
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(async pos => {
     const { latitude, longitude } = pos.coords;
