@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Alerta Sísmica ETA Final</title>
+  <title>SASNO Alerta Símica Final</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet" />
@@ -28,16 +27,14 @@
     .popup-card h1 {
       margin: 0 0 4px 0;
       font-size: clamp(10px, 2.5vw, 14px);
-      color: red;
     }
     .popup-card p {
       margin: 2px 0;
       font-size: clamp(8px, 2vw, 12px);
     }
     .anticipacion {
-      color: red;
-      font-size: clamp(9px, 2.2vw, 13px);
       font-weight: bold;
+      font-size: clamp(9px, 2.2vw, 13px);
     }
   </style>
 </head>
@@ -47,7 +44,7 @@
 <div id="map"></div>
 
 <div class="popup-card">
-  <h1>ALERTA</h1>
+  <h1 id="titulo-alerta">---</h1>
   <p>Distancia: <b id="distancia">-- km</b></p>
   <p>ETA: <span class="anticipacion" id="eta">--</span></p>
   <audio id="alertaAudio" src="/assets/alerta.mp3" preload="auto"></audio>
@@ -61,6 +58,16 @@
     parseFloat(params.get("lon")),
     parseFloat(params.get("lat"))
   ];
+  const modo = params.get("modo") || "eqw";  // default eqw si no viene nada
+
+  let colorOnda = (modo === "eqw") ? "#FF0000" : "#00FF00";
+  let textoAlerta = (modo === "eqw") ? "ALERTA SÍSMICA" : "SISMO EN PROGRESO";
+  let textoVoz = (modo === "eqw") ? "Alerta sísmica" : "Sismo en progreso";
+
+  document.getElementById("titulo-alerta").innerText = textoAlerta;
+  document.getElementById("titulo-alerta").style.color = colorOnda;
+  document.querySelector(".anticipacion").style.color = colorOnda;
+
   let etaS = 0, startTime = null;
   let map, user;
 
@@ -82,16 +89,16 @@
 
     map.on('load', () => {
       map.addSource('epicenter', { type:'geojson', data:{ type:'Point', coordinates:epicenter } });
-      map.addLayer({ id:'epicenter-circle', type:'circle', source:'epicenter', paint:{ 'circle-radius':10, 'circle-color':'#ff0000' } });
+      map.addLayer({ id:'epicenter-circle', type:'circle', source:'epicenter', paint:{ 'circle-radius':10, 'circle-color':colorOnda } });
 
       map.addSource('line', { type:'geojson', data:{ type:'Feature', geometry:{ type:'LineString', coordinates:[epicenter,user] } } });
-      map.addLayer({ id:'line-layer', type:'line', source:'line', paint:{ 'line-color':'#ff0000', 'line-width':2 } });
+      map.addLayer({ id:'line-layer', type:'line', source:'line', paint:{ 'line-color':colorOnda, 'line-width':2 } });
 
       map.addSource('ondaP', { type:'geojson', data:emptyPolygon() });
-      map.addLayer({ id:'ondaP-layer', type:'line', source:'ondaP', paint:{ 'line-color':'#ff0000','line-width':2 } });
+      map.addLayer({ id:'ondaP-layer', type:'line', source:'ondaP', paint:{ 'line-color':colorOnda,'line-width':2 } });
 
       map.addSource('ondaS', { type:'geojson', data:emptyPolygon() });
-      map.addLayer({ id:'ondaS-layer', type:'line', source:'ondaS', paint:{ 'line-color':'#ff0000','line-width':2 } });
+      map.addLayer({ id:'ondaS-layer', type:'line', source:'ondaS', paint:{ 'line-color':colorOnda,'line-width':2 } });
 
       const userMarker = document.createElement('div');
       userMarker.style.backgroundImage = "url('/assets/usermap.png')";
@@ -139,7 +146,7 @@
 
   function hablarCiclo() {
     const restante = Math.max(etaS-((performance.now()-startTime)/1000), 0);
-    const texto = `Alerta sísmica. Anticipación, ${Math.round(restante)} segundos.`;
+    const texto = `${textoVoz}. Anticipación ${Math.round(restante)} segundos.`;
     const speech = new SpeechSynthesisUtterance(texto);
     speech.lang = 'es-MX'; speech.rate = 0.9; speech.pitch = 1;
     speech.onend = () => { if(restante > 0.1){ hablarCiclo(); } };
