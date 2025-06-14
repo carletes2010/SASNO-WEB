@@ -107,7 +107,7 @@ const channel = pusher.subscribe('alertas-sasno');
 channel.bind('eqw', data => {
   triggerOverlay('¡ALERTA SÍSMICA!', 'Mantén la calma');
   if (data.latitud && data.longitud) {
-    const url = `pop.html?lat=${data.latitud}&lon=${data.longitud}`;
+    const url = `poptest.html?lat=${data.latitud}&lon=${data.longitud}`;
     document.getElementById("popup-frame").src = url;
     document.getElementById("popup-container").style.display = "block";
   }
