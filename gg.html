@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SASNO WEB FINAL PRO</title>
+  <title>SASNO WEB PRODUCCIÓN FINAL</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="/assets/icon.png">
+  <link rel="icon" href="assets/icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
   <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
   <style>
@@ -29,22 +29,22 @@
 <body>
 
 <div id="vista-inicio">
-  <div class="logo"><img src="/assets/icon.png" alt="SASNO Logo"> SASNO WEB</div>
+  <div class="logo"><img src="assets/icon.png" alt="SASNO Logo"> SASNO WEB</div>
   <div class="container">
-    <div class="status-icon"><img src="/assets/wifi.png" alt="WiFi Icon"></div>
+    <div class="status-icon"><img src="assets/wifi.png" alt="WiFi Icon"></div>
     <div class="estado">Monitoreando Eventos</div>
     <div class="ubicacion" id="ubicacion-texto">📍 Detectando ubicación...</div>
   </div>
 </div>
 
 <div class="footer-icons">
-  <img id="home-icon" src="/assets/home-icon.png" alt="Inicio">
-  <img id="settings-icon" src="/assets/settings-icon.png" alt="Configuración">
+  <img id="home-icon" src="assets/home-icon.png" alt="Inicio">
+  <img id="settings-icon" src="assets/settings-icon.png" alt="Configuración">
 </div>
 
 <div id="vista-simulacro" class="overlay-base">
   <button class="overlay-btn" onclick="cerrarSimulacro()">&times;</button>
-  <img src="/assets/whitelogo.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
+  <img src="assets/whitelogo.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
   <h1 id="sim-title" style="font-size:4rem; margin:1.2rem 0;">¡ALERTA SÍSMICA!</h1>
   <h2 id="sim-subtitle" style="font-size:2.5rem;">Mantén la calma</h2>
 </div>
@@ -53,7 +53,7 @@
   <iframe id="popup-frame" src=""></iframe>
 </div>
 
-<audio id="alertaudio" src="/assets/alertaudio.mp3" preload="auto"></audio>
+<audio id="alertaudio" src="assets/alertaudio.mp3" preload="auto"></audio>
 
 <script>
 let userInteracted = false;
@@ -94,7 +94,6 @@ channel.bind('eqw', data => {
   }
 });
 
-// Geolocalización inicial (igual que antes)
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(async pos => {
     const { latitude, longitude } = pos.coords;
