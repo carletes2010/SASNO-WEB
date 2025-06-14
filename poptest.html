@@ -15,39 +15,28 @@
       bottom: 20px;
       left: 20px;
       background-color: rgba(30, 30, 30, 0.95);
-      border-radius: 12px;
-      padding: 15px 20px;
+      border-radius: 10px;
+      padding: 10px 15px;
       color: white;
       font-family: Arial, sans-serif;
-      width: 230px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      width: 200px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
       z-index: 9999;
-      transition: all 0.3s ease;
     }
 
     .popup-card h1 {
-      margin: 0 0 10px 0;
-      font-size: 16px;
+      margin: 0 0 8px 0;
+      font-size: 14px;
       color: red;
     }
     .popup-card p {
       margin: 4px 0;
-      font-size: 14px;
+      font-size: 12px;
     }
     .anticipacion {
       color: red;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
-    }
-
-    @media screen and (max-width: 600px) {
-      .popup-card {
-        width: 180px;
-        padding: 10px 15px;
-      }
-      .popup-card h1 { font-size: 14px; }
-      .popup-card p { font-size: 12px; }
-      .anticipacion { font-size: 16px; }
     }
   </style>
 </head>
@@ -72,22 +61,21 @@
     parseFloat(params.get("lat"))
   ];
   let etaS = 0, startTime = null;
-  let map, user;
 
   navigator.geolocation.getCurrentPosition(pos => {
-    user = [pos.coords.longitude, pos.coords.latitude];
-    iniciarMapa();
+    const user = [pos.coords.longitude, pos.coords.latitude];
+    iniciarMapa(user);
   }, () => {
-    user = [-99.1332, 19.4326];
-    iniciarMapa();
+    const user = [-99.1332, 19.4326];
+    iniciarMapa(user);
   });
 
-  function iniciarMapa() {
-    map = new mapboxgl.Map({
+  function iniciarMapa(user) {
+    const map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/dark-v10',
       center: user,
-      zoom: calcularZoom(),
+      zoom: 5.3
     });
 
     map.on('load', () => {
@@ -110,22 +98,11 @@
       userMarker.style.height = "40px";
       new mapboxgl.Marker(userMarker).setLngLat(user).addTo(map);
 
-      iniciarAnimacion();
-    });
-
-    window.addEventListener('resize', () => {
-      map.setCenter(user);
-      map.setZoom(calcularZoom());
+      iniciarAnimacion(map, user);
     });
   }
 
-  function calcularZoom() {
-    if (window.innerWidth < 600) return 4.5;
-    if (window.innerWidth < 900) return 5;
-    return 5.3;
-  }
-
-  function iniciarAnimacion() {
+  function iniciarAnimacion(map, user) {
     const distancia = calcularDistancia(epicenter[1], epicenter[0], user[1], user[0]);
     document.getElementById("distancia").innerText = distancia.toFixed(1)+" km";
     etaS = distancia/5;
