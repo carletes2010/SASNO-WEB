@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SASNO WEB PRODUCCIÓN FINAL</title>
+  <title>SASNO WEB PRODUCCIÓN FINAL COMPLETO</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="assets/icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
@@ -37,6 +37,14 @@
   </div>
 </div>
 
+<div id="vista-config" style="display:none; position:fixed; top:0; left:0; width:100%; height:100vh; background:#fff; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem;">
+  <img src="assets/icon.png" alt="SASNO Logo" style="height:60px; margin-bottom:1.5rem;">
+  <h1 style="font-size:3rem; margin-bottom:2.5rem;">Configuración</h1>
+  <button id="alert-test-btn" style="padding:1.2rem 2.4rem; font-size:1.5rem; border:none; border-radius:30px; background:#004aad; color:#fff; cursor:pointer; margin-bottom:2.5rem;">PRUEBA DE ALERTA</button>
+  <div style="margin-bottom:3.5rem; font-size:1.8rem; font-weight:bold;">Sismos Menores <input type="checkbox" checked style="transform:scale(1.6); margin-left:1rem;"></div>
+  <h2 style="font-size:2.2rem;">SASNO 2025</h2>
+</div>
+
 <div class="footer-icons">
   <img id="home-icon" src="assets/home-icon.png" alt="Inicio">
   <img id="settings-icon" src="assets/settings-icon.png" alt="Configuración">
@@ -59,6 +67,17 @@
 let userInteracted = false;
 document.addEventListener('click', () => userInteracted = true);
 document.addEventListener('touchstart', () => userInteracted = true);
+
+document.getElementById('home-icon').onclick = () => switchView('inicio');
+document.getElementById('settings-icon').onclick = () => switchView('config');
+document.getElementById('alert-test-btn').onclick = () => {
+  triggerOverlay("¡SIMULACRO!", "Prueba de alerta");
+};
+
+function switchView(view) {
+  document.getElementById('vista-inicio').style.display = view==='inicio'? 'block':'none';
+  document.getElementById('vista-config').style.display = view==='config'? 'flex':'none';
+}
 
 function cerrarSimulacro() {
   document.getElementById('vista-simulacro').classList.remove('show');
