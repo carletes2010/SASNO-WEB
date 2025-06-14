@@ -13,12 +13,16 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Comfortaa',sans-serif;min-height:100vh;background:#fff;overflow-x:hidden}
 
-/* X global */
-#btnClose{position:fixed;top:16px;left:16px;width:48px;height:48px;border:none;border-radius:50%;background:#fff;
-          color:#000;font-size:2rem;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center;
-          z-index:10000;box-shadow:0 0 12px rgba(0,0,0,.45)}
+/* ───────── BOTÓN UNIVERSAL “X” ───────── */
+#btnClose{
+  position:fixed;top:16px;left:16px;width:48px;height:48px;
+  display:none;align-items:center;justify-content:center;
+  border:none;border-radius:50%;background:#fff;color:#000;
+  font-size:2rem;font-weight:700;cursor:pointer;
+  z-index:100000;box-shadow:0 0 12px rgba(0,0,0,.45)
+}
 
-/* HOME */
+/* ───────── HOME ───────── */
 #home{display:flex;flex-direction:column;min-height:100vh}
 #home .logo{font-size:3.4rem;font-weight:700;color:#e53935;text-align:center;padding:1.5rem 0 .4rem}
 #home .logo img{height:68px;margin-right:10px;vertical-align:middle}
@@ -27,37 +31,38 @@ body{font-family:'Comfortaa',sans-serif;min-height:100vh;background:#fff;overflo
 #home .estado{font-size:2.7rem;font-weight:700}
 #home .ubicacion{font-size:1.5rem;margin-top:1rem}
 
-/* FOOTER */
+/* ───────── FOOTER ───────── */
 .footer{position:fixed;bottom:0;width:100%;display:flex;justify-content:center;gap:2rem;padding:1rem;background:#fff;border-top:1px solid #ccc;z-index:100}
 .footer img{height:26px;cursor:pointer}
 
-/* CONFIG */
+/* ───────── CONFIG ───────── */
 #config{position:fixed;inset:0;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:2rem;z-index:10}
 #config h1{font-size:3rem}
 #config button{padding:1rem 2.2rem;border:none;border-radius:30px;background:#004aad;color:#fff;font-size:1.2rem}
 
-/* OVERLAY ALERTA */
+/* ───────── OVERLAY ALERTA ───────── */
 #alert{position:fixed;inset:0;background:#ffa500;color:#fff;display:none;flex-direction:column;justify-content:center;align-items:center;gap:1.1rem;text-align:center;z-index:9999}
 #alert h1{font-size:3.2rem}
 #alert h2{font-size:1.9rem}
 
-/* POP */
+/* ───────── POP LATERAL ───────── */
 #popBox{position:fixed;top:20px;right:20px;width:400px;height:400px;background:#000;border-radius:15px;
         box-shadow:0 0 20px rgba(0,0,0,.55);display:none;z-index:99999}
 #popFrame{width:100%;height:100%;border:none;border-radius:15px}
 
-/* ADVISORY */
+/* ───────── ADVISORY FULLSCREEN ───────── */
 #advBox{position:fixed;inset:0;display:none;z-index:99998}
 #advFrame{width:100%;height:100%;border:none}
 </style>
 </head>
 <body>
 
+<!-- ︙ “X” UNIVERSAL -->
 <button id="btnClose">×</button>
 
-<!-- HOME -->
+<!-- ︙ HOME -->
 <section id="home">
-  <div class="logo"><img src="assets/icon.png"> SASNO WEB</div>
+  <div class="logo"><img src="assets/icon.png" alt="icon"> SASNO WEB</div>
   <div class="box">
     <img src="assets/wifi.png" alt="wifi">
     <div class="estado">Monitoreando Eventos</div>
@@ -65,9 +70,9 @@ body{font-family:'Comfortaa',sans-serif;min-height:100vh;background:#fff;overflo
   </div>
 </section>
 
-<!-- CONFIG -->
+<!-- ︙ CONFIG -->
 <section id="config">
-  <img src="assets/icon.png" style="height:60px">
+  <img src="assets/icon.png" style="height:60px" alt="">
   <h1>Configuración</h1>
   <button id="btnSim">PRUEBA DE ALERTA</button>
   <label style="font-size:1.3rem;font-weight:700">
@@ -77,99 +82,109 @@ body{font-family:'Comfortaa',sans-serif;min-height:100vh;background:#fff;overflo
   <h2>SASNO 2025</h2>
 </section>
 
-<!-- FOOTER -->
+<!-- ︙ FOOTER -->
 <div class="footer">
-  <img id="btnHome"   src="assets/home-icon.png">
-  <img id="btnCfg"    src="assets/settings-icon.png">
+  <img id="btnHome" src="assets/home-icon.png"   alt="home">
+  <img id="btnCfg"  src="assets/settings-icon.png" alt="cfg">
 </div>
 
-<!-- ALERTA -->
+<!-- ︙ ALERTA -->
 <section id="alert">
-  <img src="assets/whitelogo.png" style="height:60px">
+  <img src="assets/whitelogo.png" style="height:60px" alt="">
   <h1 id="alertTitle">¡ALERTA SÍSMICA!</h1>
-  <img src="assets/handicon.png" style="height:200px">
+  <img src="assets/handicon.png" style="height:200px" alt="">
   <h2 id="alertSub">Mantén la calma</h2>
 </section>
 
-<!-- POP & ADVISORY -->
+<!-- ︙ POP & ADVISORY -->
 <div id="popBox"><iframe id="popFrame"></iframe></div>
 <div id="advBox"><iframe id="advFrame"></iframe></div>
 
-<!-- AUDIO -->
+<!-- ︙ AUDIO -->
 <audio id="alertAudio" src="assets/alertaudio.mp3" preload="auto"></audio>
 
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
 
-/*================ refs ================*/
+/* refs cortos  */
 const $=id=>document.getElementById(id);
-const home    =$('home'),    config  =$('config'),   alert =$('alert');
-const popBox  =$('popBox'),  popFrame=$('popFrame');
-const advBox  =$('advBox'),  advFrame=$('advFrame');
-const btnClose=$('btnClose');const chkMinor=$('chkMinor');
-const alertAudio=$('alertAudio');
+const home=$('home'),config=$('config'),alert=$('alert');
+const popBox=$('popBox'),popFrame=$('popFrame');
+const advBox=$('advBox'),advFrame=$('advFrame');
+const btnClose=$('btnClose'),chkMinor=$('chkMinor'),alertAudio=$('alertAudio');
 
-/*================ helpers ================*/
-const show   =el=>{el.style.display='flex'};
-const hide   =el=>{el.style.display='none'};
-const showX  =()=>btnClose.style.display='flex';
-const hideX  =()=>btnClose.style.display='none';
-const resetUI=()=>{hide(alert);hide(popBox);hide(advBox);hideX();home.style.display='flex';config.style.display='none'};
+/* helper UI */
+const show = el => el.style.display='flex';
+const hide = el => el.style.display='none';
+const showX=()=> btnClose.style.display='flex';
+const hideX=()=> btnClose.style.display='none';
 
-/*================ audio ================*/
-let interacted=false;
-window.addEventListener('pointerdown',()=>interacted=true,{once:true});
-const play=()=>{if(interacted){alertAudio.currentTime=0;alertAudio.play()}};
+/* full reset */
+function resetUI(){
+  hide(alert); hide(popBox); hide(advBox); hideX();
+  alertAudio.pause(); alertAudio.currentTime=0;
+  popFrame.src=''; advFrame.src='';
+  home.style.display='flex'; config.style.display='none';
+}
 
-/*================ navegación ================*/
-$('btnHome').onclick=()=>{home.style.display='flex';config.style.display='none'};
-$('btnCfg' ).onclick=()=>{config.style.display='flex';home .style.display='none'};
+/* audio permiso */
+let readyAudio=false;
+window.addEventListener('pointerdown',()=>readyAudio=true,{once:true});
+const play=()=>{if(readyAudio){alertAudio.currentTime=0;alertAudio.play().catch(()=>{});}};
 
-/*================ botón X global ================*/
-btnClose.onclick=resetUI;
+/* navegación footer */
+$('btnHome').onclick = ()=>{home.style.display='flex';config.style.display='none';};
+$('btnCfg' ).onclick = ()=>{config.style.display='flex';home .style.display='none';};
 
-/*================ simulacro manual ================*/
-$('btnSim').onclick=()=>{
+/* X universal */
+btnClose.onclick = resetUI;
+
+/* simulacro manual */
+$('btnSim').onclick = ()=>{
   $('alertTitle').textContent='¡SIMULACRO!';
   $('alertSub').textContent='Prueba de alerta';
   show(alert);showX();play();
 };
 
-/*================ Pusher ================*/
+/* Pusher */
 const pusher=new Pusher('0f74c31648d3adb34e1b',{cluster:'us2',forceTLS:true});
 pusher.subscribe('alertas-sasno').bind('eqw',d=>{
   const {latitud,longitud,tipo}=d;
 
-  if(tipo==='advisory'){
-    if(!chkMinor.checked) return;
+  if(tipo==='advisory'){                         // ─ advisory ─
+    if(!chkMinor.checked) return;                // ignorar si user desactiva
     resetUI();
     advFrame.src=`advisory.html?lat=${latitud}&lon=${longitud}`;
     advBox.style.display='block';showX();
     popFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=advisory`;
     popBox.style.display='block';
     home.style.display='none';config.style.display='none';
-  }else{
+
+  }else{                                         // ─ ALERTA EQW ─
     resetUI();
     $('alertTitle').textContent='¡ALERTA SÍSMICA!';
     $('alertSub').textContent='Mantén la calma';
     show(alert);showX();
-    popFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=eqw`;
-    popBox.style.display='block';play();
+    if(latitud&&longitud){
+      popFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=eqw`;
+      popBox.style.display='block';
+    }
+    play();
   }
 });
 
-/*================ cierre advisory via postMessage ================*/
-window.addEventListener('message',e=>{if(e.data==='cerrarAdvisory') resetUI()});
+/* cerrar advisory vía postMessage */
+window.addEventListener('message',e=>{if(e.data==='cerrarAdvisory') resetUI();});
 
-/*================ geolocalización ================*/
+/* geolocalización */
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(async p=>{
     try{
-      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
-      const d=await r.json();
+      const url=`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`;
+      const d=await (await fetch(url)).json();
       const city=d.address.city||d.address.town||d.address.village||'tu zona';
       $('txtLoc').textContent=`📍 Alertando para: ${city}, ${d.address.state||''}`;
-    }catch{$('txtLoc').textContent='📍 Ubicación no disponible'};
+    }catch{$('txtLoc').textContent='📍 Ubicación no disponible';}
   },()=>$('txtLoc').textContent='📍 No se pudo obtener ubicación');
 }else $('txtLoc').textContent='📍 Geolocalización no compatible';
 });
