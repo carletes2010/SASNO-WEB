@@ -12,30 +12,32 @@
 
     .popup-card {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
+      bottom: 2vh;
+      left: 2vw;
       background-color: rgba(30, 30, 30, 0.95);
       border-radius: 10px;
-      padding: 10px 15px;
+      padding: 1vh 1vw;
       color: white;
       font-family: Arial, sans-serif;
-      width: 200px;
+      width: 15vw;
+      min-width: 130px;
+      max-width: 200px;
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
       z-index: 9999;
     }
 
     .popup-card h1 {
-      margin: 0 0 8px 0;
-      font-size: 14px;
+      margin: 0 0 0.8vh 0;
+      font-size: 1.6vh;
       color: red;
     }
     .popup-card p {
-      margin: 4px 0;
-      font-size: 12px;
+      margin: 0.5vh 0;
+      font-size: 1.4vh;
     }
     .anticipacion {
       color: red;
-      font-size: 16px;
+      font-size: 1.6vh;
       font-weight: bold;
     }
   </style>
@@ -108,13 +110,12 @@
     });
   }
 
-  // Calcula zoom dinámico según ancho
   function calcularZoom() {
     const ancho = window.innerWidth;
     if (ancho >= 1400) return 5.3;
-    if (ancho >= 1000) return 5.1;
-    if (ancho >= 700)  return 4.8;
-    return 4.5;
+    if (ancho >= 1000) return 5.0;
+    if (ancho >= 700)  return 4.7;
+    return 4.3;
   }
 
   function iniciarAnimacion() {
