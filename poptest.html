@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pop Alerta Sísmica ETA Final</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    body { margin: 0; padding: 0; background: #000; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+    .popup-card {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background-color: rgba(30, 30, 30, 0.95);
+      border-radius: 12px;
+      padding: 15px 20px;
+      color: white;
+      font-family: Arial, sans-serif;
+      width: 230px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      z-index: 9999;
+      transition: all 0.3s ease;
+    }
+
+    .popup-card h1 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      color: red;
+    }
+    .popup-card p {
+      margin: 4px 0;
+      font-size: 14px;
+    }
+    .anticipacion {
+      color: red;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    @media screen and (max-width: 600px) {
+      .popup-card {
+        width: 180px;
+        padding: 10px 15px;
+      }
+      .popup-card h1 { font-size: 14px; }
+      .popup-card p { font-size: 12px; }
+      .anticipacion { font-size: 16px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<div class="popup-card">
+  <h1>ALERTA SÍSMICA</h1>
+  <p>Distancia: <b id="distancia">-- km</b></p>
+  <p>ETA: <span class="anticipacion" id="eta">Calculando...</span></p>
+  <audio id="alertaAudio" src="/assets/alerta.mp3" preload="auto"></audio>
+</div>
+
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiYWx6b2FsZXJ0YXNpc21pY2EiLCJhIjoiY2wyNHM2c25vMjNoejNpcWRrb3Y4MzV6ciJ9.D2pXLxF0emuIHvrW-n181Q';
+
+  const params = new URLSearchParams(window.location.search);
+  const epicenter = [
+    parseFloat(params.get("lon")),
+    parseFloat(params.get("lat"))
+  ];
+  let etaS = 0, startTime = null;
+  let map, user;
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    user = [pos.coords.longitude, pos.coords.latitude];
+    iniciarMapa();
+  }, () => {
+    user = [-99.1332, 19.4326];
+    iniciarMapa();
+  });
+
+  function iniciarMapa() {
+    map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/dark-v10',
+      center: user,
+      zoom: calcularZoom(),
+    });
+
+    map.on('load', () => {
+      map.addSource('epicenter', { type:'geojson', data:{ type:'Point', coordinates:epicenter } });
+      map.addLayer({ id:'epicenter-circle', type:'circle', source:'epicenter', paint:{ 'circle-radius':10, 'circle-color':'#ff0000' } });
+
+      map.addSource('line', { type:'geojson', data:{ type:'Feature', geometry:{ type:'LineString', coordinates:[epicenter,user] } } });
+      map.addLayer({ id:'line-layer', type:'line', source:'line', paint:{ 'line-color':'#ff0000', 'line-width':2 } });
+
+      map.addSource('ondaP', { type:'geojson', data:emptyPolygon() });
+      map.addLayer({ id:'ondaP-layer', type:'line', source:'ondaP', paint:{ 'line-color':'#ff0000','line-width':2 } });
+
+      map.addSource('ondaS', { type:'geojson', data:emptyPolygon() });
+      map.addLayer({ id:'ondaS-layer', type:'line', source:'ondaS', paint:{ 'line-color':'#ff0000','line-width':2 } });
+
+      const userMarker = document.createElement('div');
+      userMarker.style.backgroundImage = "url('/assets/usermap.png')";
+      userMarker.style.backgroundSize = "contain";
+      userMarker.style.width = "40px";
+      userMarker.style.height = "40px";
+      new mapboxgl.Marker(userMarker).setLngLat(user).addTo(map);
+
+      iniciarAnimacion();
+    });
+
+    window.addEventListener('resize', () => {
+      map.setCenter(user);
+      map.setZoom(calcularZoom());
+    });
+  }
+
+  function calcularZoom() {
+    if (window.innerWidth < 600) return 4.5;
+    if (window.innerWidth < 900) return 5;
+    return 5.3;
+  }
+
+  function iniciarAnimacion() {
+    const distancia = calcularDistancia(epicenter[1], epicenter[0], user[1], user[0]);
+    document.getElementById("distancia").innerText = distancia.toFixed(1)+" km";
+    etaS = distancia/5;
+    document.getElementById("eta").innerText = etaS.toFixed(1)+" seg.";
+    startTime = performance.now();
+    hablarCiclo();
+    reproducirSonido();
+    requestAnimationFrame(function animar(timestamp) {
+      const elapsed = (timestamp-startTime)/1000;
+      const radioP = 8000*elapsed;
+      const radioS = 5000*elapsed;
+      map.getSource('ondaP').setData({ type:'Feature', geometry:{ type:'Polygon', coordinates:[createCircle(epicenter,radioP)] } });
+      map.getSource('ondaS').setData({ type:'Polygon', coordinates:[createCircle(epicenter,radioS)] });
+      const restante = etaS - elapsed;
+      document.getElementById("eta").innerText = (restante > 0 ? restante.toFixed(1) : 0) + " seg.";
+      requestAnimationFrame(animar);
+    });
+  }
+
+  function reproducirSonido() {
+    const audio = document.getElementById("alertaAudio");
+    audio.play().catch(e => console.warn("Error al reproducir sonido:", e));
+  }
+
+  function hablarCiclo() {
+    const restante = Math.max(etaS-((performance.now()-startTime)/1000), 0);
+    const texto = `Alerta sísmica. Anticipación, ${Math.round(restante)} segundos.`;
+    const speech = new SpeechSynthesisUtterance(texto);
+    speech.lang = 'es-MX'; speech.rate = 0.9; speech.pitch = 1;
+    speech.onend = () => { if(restante > 0.1){ hablarCiclo(); } };
+    speechSynthesis.speak(speech);
+  }
+
+  function emptyPolygon() { return { type:'Feature', geometry:{ type:'Polygon', coordinates:[[]] } }; }
+
+  function createCircle(center, radius, points=64) {
+    const coords=[], dx=radius/(111320*Math.cos(center[1]*Math.PI/180)), dy=radius/110574;
+    for(let i=0;i<points;i++){
+      const theta=(i/points)*(2*Math.PI);
+      coords.push([center[0]+dx*Math.cos(theta), center[1]+dy*Math.sin(theta)]);
+    }
+    coords.push(coords[0]); return coords;
+  }
+
+  function calcularDistancia(lat1,lon1,lat2,lon2) {
+    const R=6371;
+    const dLat=deg2rad(lat2-lat1), dLon=deg2rad(lon2-lon1);
+    const a=Math.sin(dLat/2)**2 + Math.cos(deg2rad(lat1))*Math.cos(deg2rad(lat2))*Math.sin(dLon/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+  function deg2rad(deg){ return deg*(Math.PI/180); }
+</script>
+
+</body>
+</html>
