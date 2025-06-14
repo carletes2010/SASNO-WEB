@@ -145,7 +145,7 @@
   function deg2rad(deg){ return deg*(Math.PI/180); }
 
   // SIMULACRO TRIGGER DESDE PUSHER (o desde prueba manual)
-  const pusher = new Pusher('TU_PUSHER_KEY', { cluster: 'us2', forceTLS: true });
+  const pusher = new Pusher('0f74c31648d3adb34e1b', { cluster: 'us2', forceTLS: true });
   const channel = pusher.subscribe('alertas-sasno');
   channel.bind('simulacro', () => {
     document.getElementById("simulacro").classList.add("show");
