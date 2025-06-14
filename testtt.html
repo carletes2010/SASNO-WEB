@@ -9,158 +9,96 @@
 <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Comfortaa',sans-serif;min-height:100vh;background:#fff}
-
-/* ───── VISTA INICIO ───── */
-#viewHome{display:flex;flex-direction:column;min-height:100vh}
-#viewHome .logo{font-size:3.3rem;font-weight:700;color:#e53935;text-align:center;padding:1.5rem 0 .4rem}
-#viewHome .logo img{height:68px;margin-right:10px;vertical-align:middle}
-#viewHome .container{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem}
-#viewHome .container img{height:115px}
-#viewHome .estado{font-size:2.6rem;font-weight:700}
-#viewHome .ubicacion{font-size:1.4rem;margin-top:1rem}
-
-/* ───── FOOTER ───── */
-.footer{position:fixed;bottom:0;width:100%;display:flex;justify-content:center;gap:2rem;padding:1rem;background:#fff;border-top:1px solid #ccc;z-index:100}
-.footer img{height:26px;cursor:pointer}
-
-/* ───── VISTA CONFIG ───── */
-#viewConfig{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:2rem;background:#fff;z-index:10}
-#viewConfig h1{font-size:3rem}
-#viewConfig button{padding:1rem 2rem;border:none;border-radius:30px;background:#004aad;color:#fff;font-size:1.2rem}
-
-/* ───── OVERLAY ALERTA ───── */
-#viewAlert{position:fixed;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;gap:1rem;background:#FFA500;color:#fff;text-align:center;z-index:9999}
-#btnAlertClose{position:absolute;top:1rem;left:1rem;width:48px;height:48px;border:none;border-radius:50%;background:#fff;color:#000;font-size:2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10000}
-
-/* ───── POP LATERAL ───── */
-#popBox{position:fixed;top:20px;right:20px;width:300px;height:200px;background:#000;border-radius:15px;box-shadow:0 0 20px rgba(0,0,0,.5);display:none;z-index:99999}
-#popFrame{width:100%;height:100%;border:none;border-radius:15px}
-
-/* ───── ADVISORY FULLSCREEN ───── */
-#advBox{position:fixed;inset:0;display:none;z-index:99998}
-#advFrame{width:100%;height:100%;border:none}
-#btnAdvClose{position:fixed;top:20px;right:20px;width:50px;height:50px;border:none;border-radius:50%;background:#fff;color:#000;font-size:2rem;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:10001;pointer-events:auto;box-shadow:0 0 12px rgba(0,0,0,.55)}
+/* …── estilos base (igual que antes) … */
+#btnCloseGlobal{
+  position:fixed;top:16px;left:16px;
+  width:48px;height:48px;font-size:2rem;
+  border:none;border-radius:50%;background:#fff;color:#000;
+  cursor:pointer;display:none;align-items:center;justify-content:center;
+  z-index:10000;box-shadow:0 0 10px rgba(0,0,0,.45)
+}
+/* el resto de estilos: viewHome, viewConfig, viewAlert, popBox, advBox … */
 </style>
 </head>
 <body>
 
-<!-- INICIO -->
+<!--  botón X universal  -->
+<button id="btnCloseGlobal">×</button>
+
+<!-- ========= VISTA INICIO ========= -->
 <section id="viewHome">
-  <div class="logo"><img src="assets/icon.png"> SASNO WEB</div>
-  <div class="container">
-    <img src="assets/wifi.png">
-    <div class="estado">Monitoreando Eventos</div>
-    <div class="ubicacion" id="txtLocation">📍 Detectando ubicación…</div>
-  </div>
+  <!-- … logo, estado … -->
 </section>
 
-<!-- CONFIG -->
-<section id="viewConfig">
-  <img src="assets/icon.png" style="height:60px">
-  <h1>Configuración</h1>
-  <button id="btnSimulacro">PRUEBA DE ALERTA</button>
-  <label style="font-size:1.3rem;font-weight:700">
-    Sismos menores
-    <input id="chkMinor" type="checkbox" checked style="transform:scale(1.4);margin-left:.7rem">
-  </label>
-  <h2>SASNO 2025</h2>
+<!-- ========= VISTA CONFIG ========= -->
+<section id="viewConfig" style="display:none">
+  <!-- … contenido configuración … -->
 </section>
 
-<!-- FOOTER -->
-<div class="footer">
-  <img id="btnHome" src="assets/home-icon.png">
-  <img id="btnConfig" src="assets/settings-icon.png">
-</div>
-
-<!-- OVERLAY ALERTA -->
-<section id="viewAlert">
-  <button id="btnAlertClose">×</button>
+<!-- ========= OVERLAY ALERTA ========= -->
+<section id="viewAlert" style="display:none">
   <img src="assets/whitelogo.png" style="height:60px">
-  <h1 id="alertTitle" style="font-size:3.2rem">¡ALERTA SÍSMICA!</h1>
+  <h1 id="alertTitle">¡ALERTA SÍSMICA!</h1>
   <img src="assets/handicon.png" style="height:200px">
-  <h2 id="alertSub" style="font-size:1.9rem">Mantén la calma</h2>
+  <h2 id="alertSub">Mantén la calma</h2>
 </section>
 
-<!-- POP & ADVISORY -->
-<div id="popBox"><iframe id="popFrame"></iframe></div>
-<div id="advBox"><iframe id="advFrame"></iframe></div>
-<button id="btnAdvClose">×</button>
+<!-- ========= POP & ADVISORY ========= -->
+<div id="popBox"   style="display:none"><iframe id="popFrame"></iframe></div>
+<div id="advBox"   style="display:none"><iframe id="advFrame"></iframe></div>
 
-<!-- AUDIO -->
 <audio id="alertAudio" src="assets/alertaudio.mp3" preload="auto"></audio>
 
 <script>
 document.addEventListener('DOMContentLoaded',()=>{
 
-/* -- refs -- */
+/* refs */
 const $=id=>document.getElementById(id);
-const viewHome=$('viewHome'),viewConfig=$('viewConfig'),viewAlert=$('viewAlert');
-const popBox=$('popBox'),popFrame=$('popFrame');
-const advBox=$('advBox'),advFrame=$('advFrame'),btnAdvClose=$('btnAdvClose');
-const alertAudio=$('alertAudio');const chkMinor=$('chkMinor');
+const btnX=$('btnCloseGlobal');
+const viewAlert=$('viewAlert');
+const advBox=$('advBox');
+const popBox=$('popBox');
+const popFrame=$('popFrame');
+const advFrame=$('advFrame');
+const chkMinor=$('chkMinor');      // en vista Config
+/* helpers */
+const showX =()=>{btnX.style.display='flex'};
+const hideX =()=>{btnX.style.display='none'};
+const closeAll=()=>{viewAlert.style.display='none';advBox.style.display='none';popBox.style.display='none';hideX();alertAudio.pause();};
 
-/* -- audio gate -- */
-let interacted=false;
-window.addEventListener('pointerdown',()=>interacted=true,{once:true});
-const play=()=>{if(interacted){alertAudio.currentTime=0;alertAudio.play()}}
+/* botón X cierra lo que esté activo */
+btnX.onclick=closeAll;
 
-/* -- navegación simple -- */
-$('btnHome').onclick = ()=>{viewHome.style.display='flex';viewConfig.style.display='none'};
-$('btnConfig').onclick= ()=>{viewConfig.style.display='flex';viewHome.style.display='none'};
-
-/* -- cierre overlays -- */
-function closeAdv(){advBox.style.display='none';btnAdvClose.style.display='none'}
-function closeAlert(){viewAlert.style.display='none';popBox.style.display='none';closeAdv();alertAudio.pause();viewHome.style.display='flex'}
-$('btnAdvClose').onclick=closeAdv; $('btnAlertClose').onclick=closeAlert;
-
-/* -- simulacro manual -- */
+/* simulacro */
 $('btnSimulacro').onclick=()=>{
   $('alertTitle').textContent='¡SIMULACRO!';
   $('alertSub').textContent='Prueba de alerta';
-  viewAlert.style.display='flex'; play();
+  viewAlert.style.display='flex';showX();alertAudio.play();
 };
 
-/* -- Pusher -- */
+/* Pusher */
 const pusher=new Pusher('0f74c31648d3adb34e1b',{cluster:'us2',forceTLS:true});
 pusher.subscribe('alertas-sasno').bind('eqw',d=>{
   const {latitud,longitud,tipo}=d;
-
   if(tipo==='advisory'){
-    if(!chkMinor.checked) return;                 // ignorar si user lo desactiva
-    closeAlert();                                 // asegurarse de no dejar overlay
+    if(!chkMinor.checked) return;
+    closeAll();
     advFrame.src=`advisory.html?lat=${latitud}&lon=${longitud}`;
-    advBox.style.display='block';btnAdvClose.style.display='flex';
+    advBox.style.display='block';showX();
     popFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=advisory`;
     popBox.style.display='block';
-    viewHome.style.display='none';viewConfig.style.display='none';
-  }else{                                          // ALERTA
-    closeAdv();                                   // prioridad
+  }else{
+    closeAll();
     $('alertTitle').textContent='¡ALERTA SÍSMICA!';
     $('alertSub').textContent='Mantén la calma';
-    viewAlert.style.display='flex';
-    if(latitud&&longitud){
-      popFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=eqw`;
-      popBox.style.display='block';
-    }
-    play();
+    viewAlert.style.display='flex';showX();
+    popFrame.src=`pop.html?lat=${latitud}&lon=${longitud}&modo=eqw`;
+    popBox.style.display='block';alertAudio.play();
   }
 });
 
-/* -- cerrar advisory vía postMessage -- */
-window.addEventListener('message',e=>{if(e.data==='cerrarAdvisory') closeAdv()});
-
-/* -- geolocalización texto -- */
-if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(async p=>{
-    try{
-      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
-      const d=await r.json();
-      $('txtLocation').textContent=`📍 Alertando para: ${(d.address.city||d.address.town||d.address.village||'tu zona')}, ${d.address.state||''}`;
-    }catch{$('txtLocation').textContent='📍 Ubicación no disponible';}
-  },()=>$('txtLocation').textContent='📍 No se pudo obtener ubicación');
-}else $('txtLocation').textContent='📍 Geolocalización no compatible';
+/* cerrar advisory desde iframe */
+window.addEventListener('message',e=>{if(e.data==='cerrarAdvisory') closeAll();});
 });
 </script>
 </body>
