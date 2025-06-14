@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SASNO WEB PRO FINAL CON ADVISORY</title>
+  <title>SASNO WEB PRO FINAL CON ADVISORY FULL</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="assets/icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
@@ -23,6 +23,8 @@
     .overlay-btn { position: absolute; top: 1.2rem; left: 1.2rem; background: #fff; border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 2rem; cursor: pointer; color: #000; }
     #popup-container { position: fixed; top: 20px; right: 20px; width: 400px; height: 400px; z-index: 99999; display: none; background: #000; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
     #popup-frame { width: 100%; height: 100%; border: none; border-radius: 15px; }
+    #advisory-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99998; display: none; }
+    #advisory-frame { width: 100%; height: 100%; border: none; }
   </style>
 </head>
 
@@ -62,6 +64,10 @@
   <iframe id="popup-frame" src=""></iframe>
 </div>
 
+<div id="advisory-fullscreen">
+  <iframe id="advisory-frame" src=""></iframe>
+</div>
+
 <audio id="alertaudio" src="assets/alertaudio.mp3" preload="auto"></audio>
 
 <script>
@@ -83,6 +89,7 @@ function switchView(view) {
 function cerrarSimulacro() {
   document.getElementById('vista-simulacro').classList.remove('show');
   document.getElementById('popup-container').style.display = "none";
+  document.getElementById('advisory-fullscreen').style.display = "none";
   resetAudio();
 }
 
@@ -107,8 +114,15 @@ const channel = pusher.subscribe('alertas-sasno');
 
 channel.bind('eqw', data => {
   if (data.tipo === "advisory") {
-    const url = `advisory.html?lat=${data.latitud}&lon=${data.longitud}`;
-    document.getElementById("popup-frame").src = url;
+    document.getElementById('vista-inicio').style.display = 'none';
+    document.getElementById('vista-config').style.display = 'none';
+    
+    const advisoryURL = `advisory.html?lat=${data.latitud}&lon=${data.longitud}`;
+    document.getElementById("advisory-frame").src = advisoryURL;
+    document.getElementById("advisory-fullscreen").style.display = "block";
+
+    const popURL = `pop.html?lat=${data.latitud}&lon=${data.longitud}`;
+    document.getElementById("popup-frame").src = popURL;
     document.getElementById("popup-container").style.display = "block";
   } else {
     triggerOverlay('¡ALERTA SÍSMICA!', 'Mantén la calma');
