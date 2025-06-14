@@ -12,33 +12,39 @@
 
     .popup-card {
       position: absolute;
-      bottom: 2vh;
-      left: 2vw;
+      bottom: 20px;
+      left: 20px;
       background-color: rgba(30, 30, 30, 0.95);
       border-radius: 10px;
-      padding: 1vh 1vw;
+      padding: 10px;
       color: white;
       font-family: Arial, sans-serif;
-      width: 15vw;
-      min-width: 130px;
-      max-width: 200px;
+      width: 25vw;
+      min-width: 80px;
+      max-width: 180px;
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
       z-index: 9999;
     }
 
     .popup-card h1 {
-      margin: 0 0 0.8vh 0;
-      font-size: 1.6vh;
+      margin: 0 0 8px 0;
+      font-size: 3vw;
       color: red;
     }
     .popup-card p {
-      margin: 0.5vh 0;
-      font-size: 1.4vh;
+      margin: 4px 0;
+      font-size: 2.5vw;
     }
     .anticipacion {
       color: red;
-      font-size: 1.6vh;
+      font-size: 2.8vw;
       font-weight: bold;
+    }
+
+    @media (min-width: 500px) {
+      .popup-card h1 { font-size: 14px; }
+      .popup-card p { font-size: 12px; }
+      .anticipacion { font-size: 14px; }
     }
   </style>
 </head>
