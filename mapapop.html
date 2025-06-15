@@ -113,7 +113,7 @@ function clearAll(){
 function showEvt({latitud,longitud,tipo='eqw'}){
   clearAll();
   const c=col[tipo]||'#ff3b4a';
-  tit.textContent={eqw:'ALERTA',watch:'Sismo Watch',advisory:'Sismo Menor'}[tipo];
+  tit.textContent={eqw:'Alerta Sísmica',watch:'Sismo Moderado',advisory:'Sismo Ligero'}[tipo];
   [tit,dist,eta].forEach(e=>e.style.color=c);foco.style.background=c;
   flecha.style.transform=`translateX(${({advisory:0,watch:1,eqw:2}[tipo])*constSeg-constSeg}px)`;
   const epic=[longitud,latitud];
