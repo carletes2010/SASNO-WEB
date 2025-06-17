@@ -141,7 +141,7 @@ function add(id,data,tp,paint={},layout={}){
   mapa.getSource(id)&&mapa.removeSource(id);
   mapa.addSource(id,{type:'geojson',data});
   mapa.getLayer(id)&&mapa.removeLayer(id);
-  mapa.addLayer({id,type:tp,source:id,paint,layout});
+  mapa.addLayer({id,type:tp,source:id,paint,layout}, 'user-layer');
 }
 
 function waves(id,color){
