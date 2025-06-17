@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SASNO  Mapa-Pop</title>
+<title>SASNO · Mapa-Pop</title>
 
 <link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet" />
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
@@ -29,26 +29,15 @@ html,body{margin:0;height:100%;font-family:Poppins,Arial,Helvetica,sans-serif;ba
 .bar div{flex:1;display:flex;align-items:center;justify-content:center;color:#fff}
 .leve{background:#00c853}.mod{background:#ffc400}.fue{background:#ff3b4a}
 #flecha{font-size:20px;margin-top:6px;transition:transform .3s;text-shadow:0 1px 3px #000}
-
-/* Botones nuevos */
-#controls {
-  position: fixed; top: 20px; left: 20px; z-index: 20; display: flex; flex-direction: column; gap: 12px;
-}
-.btn {
-  width: 55px; height: 55px; border-radius: 18px; background: var(--glass); backdrop-filter: var(--blur);
-  border: var(--brd); box-shadow: 0 10px 32px rgba(0,0,0,.48); display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-}
+#controls {position: fixed; top: 20px; left: 20px; z-index: 20; display: flex; flex-direction: column; gap: 12px;}
+.btn {width: 55px; height: 55px; border-radius: 18px; background: var(--glass); backdrop-filter: var(--blur);border: var(--brd); box-shadow: 0 10px 32px rgba(0,0,0,.48); display: flex; align-items: center; justify-content: center; cursor: pointer;}
 .btn img { width: 32px; height: 32px; }
 </style>
 </head>
 <body>
+
 <div id="map"></div>
-
-<!-- Logo -->
 <img id="logoPop" src="assets/poplogosasno.png" alt="SASNO logo" />
-
-<!-- Botones -->
 <div id="controls">
   <div class="btn" id="btnLocation"><img src="assets/icon-location.png" alt="Ubicación"></div>
   <div class="btn" id="btnTheme"><img src="assets/icon-moon.png" alt="Tema"></div>
@@ -69,57 +58,68 @@ html,body{margin:0;height:100%;font-family:Poppins,Arial,Helvetica,sans-serif;ba
 <audio id="alertAudio" src="/assets/alerta.mp3" preload="auto"></audio>
 
 <script>
-mapboxgl.accessToken='pk.eyJ1IjoiYWx6b2FsZXJ0YXNpc21pY2EiLCJhIjoiY2wyNHM2c25vMjNoejNpcWRrb3Y4MzV6ciJ9.D2pXLxF0emuIHvrW-n181Q';
-let initialCenter = [-99.1332,19.4326];
+mapboxgl.accessToken = 'pk.eyJ1IjoiYWx6b2FsZXJ0YXNpc21pY2EiLCJhIjoiY2wyNHM2c25vMjNoejNpcWRrb3Y4MzV6ciJ9.D2pXLxF0emuIHvrW-n181Q';
+let initialCenter = [-99.1332, 19.4326];
 let currentStyle = 'dark';
-
-const map = new mapboxgl.Map({container:'map',style:'mapbox://styles/mapbox/dark-v10',center:initialCenter,zoom:5.3});
 let user = initialCenter;
+let mapa = null;
 
-map.on('load', () => {
-  map.loadImage('assets/usermap.png', (error, image) => {
-    if (error) throw error;
-    map.addImage('user-icon', image);
-    map.addSource('user-location', {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: [] }
-    });
-    map.addLayer({
-      id: 'user-layer',
-      type: 'symbol',
-      source: 'user-location',
-      layout: { 'icon-image': 'user-icon', 'icon-size': 0.15 }
-    });
+function createMap(style) {
+  mapa = new mapboxgl.Map({
+    container: 'map',
+    style: `mapbox://styles/mapbox/${style}-v10`,
+    center: user,
+    zoom: 5.3
   });
+
+  mapa.on('load', () => {
+    mapa.loadImage('assets/usermap.png', (error, image) => {
+      if (error) throw error;
+      if (!mapa.hasImage('user-icon')) mapa.addImage('user-icon', image);
+      mapa.addSource('user-location', { type: 'geojson', data: getUserGeoJSON() });
+      mapa.addLayer({
+        id: 'user-layer',
+        type: 'symbol',
+        source: 'user-location',
+        layout: { 'icon-image': 'user-icon', 'icon-size': 0.15 }
+      });
+    });
+
+    restoreEventLayers();
+  });
+}
+
+function getUserGeoJSON() {
+  return { type: 'FeatureCollection', features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: user } }] };
+}
+
+navigator.geolocation.getCurrentPosition(pos => {
+  user = [pos.coords.longitude, pos.coords.latitude];
+  mapa && mapa.flyTo({ center: user, zoom: 5.3 });
+  updateUserLayer();
 });
 
-navigator.geolocation.getCurrentPosition(p => {
-  user = [p.coords.longitude, p.coords.latitude];
-  map.flyTo({center: user, zoom: 5.3});
-  if (map.getSource('user-location')) {
-    map.getSource('user-location').setData({
-      type: 'FeatureCollection',
-      features: [{type: 'Feature', geometry: {type: 'Point', coordinates: user}}]
-    });
+function updateUserLayer() {
+  if (mapa.getSource('user-location')) {
+    mapa.getSource('user-location').setData(getUserGeoJSON());
   }
-});
+}
 
 document.getElementById('btnLocation').addEventListener('click', () => {
-  map.flyTo({center: initialCenter, zoom: 5.3});
+  mapa.flyTo({ center: initialCenter, zoom: 5.3 });
 });
 
 document.getElementById('btnTheme').addEventListener('click', () => {
-  if (currentStyle === 'dark') {
-    map.setStyle('mapbox://styles/mapbox/light-v10');
-    document.getElementById('logoPop').src = 'assets/poplogosasnodark.png';
-    currentStyle = 'light';
-  } else {
-    map.setStyle('mapbox://styles/mapbox/dark-v10');
-    document.getElementById('logoPop').src = 'assets/poplogosasno.png';
-    currentStyle = 'dark';
-  }
+  currentStyle = (currentStyle === 'dark') ? 'light' : 'dark';
+  document.getElementById('logoPop').src = (currentStyle === 'dark') ? 'assets/poplogosasno.png' : 'assets/poplogosasnodark.png';
+  const oldMap = mapa;
+  createMap(currentStyle);
+  oldMap.remove();
 });
 
+createMap(currentStyle);
+
+/* Animaciones sísmicas */
 const empty=()=>({type:'Feature',geometry:{type:'Polygon',coordinates:[[]]}});
 const circ=([lo,la],r,n=64)=>{const dx=r/(111320*Math.cos(la*Math.PI/180)),dy=r/110574,c=[];
   for(let i=0;i<n;i++){const a=2*Math.PI*i/n;c.push([lo+dx*Math.cos(a),la+dy*Math.sin(a)])}c.push(c[0]);
@@ -131,12 +131,17 @@ const $=id=>document.getElementById(id);
 const tit=$('tit'),dist=$('dist'),eta=$('eta'),foco=$('foco'),flecha=$('flecha'),audio=$('alertAudio');
 const col={eqw:'#ff3b4a',watch:'#ffc400',advisory:'#00c853'};
 let anim=null,auto=null,constSeg=240/3;
+let lastEvt = null;
+
+function restoreEventLayers() {
+  if (lastEvt) showEvt(lastEvt);
+}
 
 function add(id,data,tp,paint={},layout={}){
-  map.getSource(id)&&map.removeSource(id);
-  map.addSource(id,{type:'geojson',data});
-  map.getLayer(id)&&map.removeLayer(id);
-  map.addLayer({id,type:tp,source:id,paint,layout});
+  mapa.getSource(id)&&mapa.removeSource(id);
+  mapa.addSource(id,{type:'geojson',data});
+  mapa.getLayer(id)&&mapa.removeLayer(id);
+  mapa.addLayer({id,type:tp,source:id,paint,layout});
 }
 
 function waves(id,color){
@@ -147,14 +152,17 @@ function waves(id,color){
 function clearAll(){
   if(anim)cancelAnimationFrame(anim);if(auto)clearTimeout(auto);
   ['epic','ln','ondaP_f','ondaP_l','ondaS_f','ondaS_l'].forEach(i=>{
-    map.getLayer(i)&&map.removeLayer(i);map.getSource(i)&&map.removeSource(i);});
+    mapa.getLayer(i)&&mapa.removeLayer(i);mapa.getSource(i)&&mapa.removeSource(i);});
   tit.textContent='Vista';[tit,dist,eta].forEach(e=>e.style.color='#fff');
   dist.textContent='Distancia: -- km';eta.textContent='ETA: -- seg';
   foco.style.background='#999';flecha.style.transform=`translateX(${-constSeg}px)`;audio.pause();audio.currentTime=0;
+  lastEvt = null;
 }
 
-function showEvt({latitud,longitud,tipo='eqw'}){
+function showEvt(evt){
   clearAll();
+  lastEvt = evt;
+  const {latitud, longitud, tipo='eqw'} = evt;
   const c=col[tipo]||'#ff3b4a';
   tit.textContent={eqw:'Alerta Sísmica',watch:'Sismo Moderado',advisory:'Sismo Ligero'}[tipo];
   [tit,dist,eta].forEach(e=>e.style.color=c);foco.style.background=c;
@@ -169,20 +177,19 @@ function showEvt({latitud,longitud,tipo='eqw'}){
   (function step(t){
     const s=(t-t0)/1000;if(s>140)return;
     const p=circ(epic,8000*s),sC=circ(epic,5000*s);
-    map.getSource('ondaP_f').setData(p);map.getSource('ondaP_l').setData(p);
-    map.getSource('ondaS_f').setData(sC);map.getSource('ondaS_l').setData(sC);
+    mapa.getSource('ondaP_f').setData(p);mapa.getSource('ondaP_l').setData(p);
+    mapa.getSource('ondaS_f').setData(sC);mapa.getSource('ondaS_l').setData(sC);
     eta.textContent=`ETA: ${Math.max(eta0-s,0).toFixed(0)} seg`;
     anim=requestAnimationFrame(step);
   })(t0);
   auto=setTimeout(clearAll,140000);
   ready&&audio.play().catch(()=>{});
-  map.flyTo({center:user,zoom:5.3});
+  mapa.flyTo({center:user,zoom:5.3});
 }
 
 let ready=false;window.addEventListener('pointerdown',()=>ready=true,{once:true});
-
-new Pusher('0f74c31648d3adb34e1b',{cluster:'us2',forceTLS:true})
-  .subscribe('alertas-sasno').bind('mapa_pop',d=>d.latitud?showEvt(d):clearAll());
+new Pusher('0f74c31648d3adb34e1b',{cluster:'us2',forceTLS:true}).subscribe('alertas-sasno').bind('mapa_pop',d=>d.latitud?showEvt(d):clearAll());
 </script>
+
 </body>
 </html>
